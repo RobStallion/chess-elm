@@ -43,6 +43,15 @@ createBoard =
     List.map createTile boardSize
 
 
+tileCoordinate : Tile -> Int
+tileCoordinate tile =
+    let
+        ( coordinate, _, _ ) =
+            tile
+    in
+    coordinate
+
+
 tileStatus : Tile -> Status
 tileStatus tile =
     let
@@ -52,15 +61,30 @@ tileStatus tile =
     status
 
 
+sumOfCoordinate : Tile -> Int
+sumOfCoordinate tile =
+    tile
+        |> tileCoordinate
+        |> String.fromInt
+        |> String.split ""
+        |> List.map String.toInt
+        |> List.foldl (\maybeN acc -> Maybe.withDefault 0 maybeN + acc) 0
+
+
+lightOrDarkTile : Tile -> String
+lightOrDarkTile tile =
+    if 0 == (modBy 2 <| sumOfCoordinate tile) then
+        "c-bg-light "
+
+    else
+        "c-bg-dark "
+
+
 tileColor : Tile -> String
 tileColor tile =
-    let
-        status =
-            tileStatus tile
-    in
-    case status of
+    case tileStatus tile of
         Legal ->
-            "bg-green "
+            lightOrDarkTile tile
 
         Illegal ->
             "bg-red "
@@ -71,7 +95,9 @@ tileColor tile =
 
 tileDiv : Tile -> Html msg
 tileDiv tile =
-    div [ class <| tileColor tile ++ "flex h3 items-center justify-center w3" ] [ p [ class "tc" ] [ text "1" ] ]
+    div [ class <| tileColor tile ++ "flex h3 items-center justify-center w3" ]
+        [ p [ class "tc" ] [ text <| String.fromInt <| tileCoordinate tile ]
+        ]
 
 
 chunk : Int -> List a -> List (List a) -> List (List a)
