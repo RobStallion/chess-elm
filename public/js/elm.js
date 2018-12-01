@@ -5153,11 +5153,11 @@ var author$project$Board$tileColor = function (tile) {
 	var status = author$project$Board$tileStatus(tile);
 	switch (status.$) {
 		case 'Legal':
-			return 'bg-green';
+			return 'bg-green ';
 		case 'Illegal':
-			return 'bg-red';
+			return 'bg-red ';
 		default:
-			return 'bg-gray';
+			return 'bg-gray ';
 	}
 };
 var elm$core$Basics$identity = function (x) {
@@ -5518,6 +5518,8 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 };
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$p = _VirtualDom_node('p');
+var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$json$Json$Encode$string = _Json_wrap;
 var elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5533,17 +5535,29 @@ var author$project$Board$tileDiv = function (tile) {
 		_List_fromArray(
 			[
 				elm$html$Html$Attributes$class(
-				'w3 h3 dib ' + author$project$Board$tileColor(tile))
+				author$project$Board$tileColor(tile) + 'flex h3 items-center justify-center w3')
 			]),
 		_List_fromArray(
 			[
-				A2(elm$html$Html$p, _List_Nil, _List_Nil)
+				A2(
+				elm$html$Html$p,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('tc')
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text('1')
+					]))
 			]));
 };
 var author$project$Board$renderRow = function (tileList) {
 	return A2(
 		elm$html$Html$div,
-		_List_Nil,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('flex justify-center')
+			]),
 		A2(elm$core$List$map, author$project$Board$tileDiv, tileList));
 };
 var elm$core$List$drop = F2(
@@ -5717,7 +5731,10 @@ var author$project$Board$splitBoardIntoRows = function (tileList) {
 var author$project$Board$renderBoard = function (tileList) {
 	return A2(
 		elm$html$Html$div,
-		_List_Nil,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('blah')
+			]),
 		A2(
 			elm$core$List$map,
 			author$project$Board$renderRow,
@@ -5725,8 +5742,6 @@ var author$project$Board$renderBoard = function (tileList) {
 };
 var author$project$Main$AddPieces = {$: 'AddPieces'};
 var elm$html$Html$button = _VirtualDom_node('button');
-var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5754,7 +5769,7 @@ var author$project$Main$view = function (model) {
 				elm$html$Html$div,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$class('tc mt4')
+						elm$html$Html$Attributes$class('mt4')
 					]),
 				_List_fromArray(
 					[

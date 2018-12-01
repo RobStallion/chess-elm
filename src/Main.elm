@@ -59,6 +59,6 @@ createPiece piece =
 view : Model -> Html Msg
 view model =
     div []
-        [ div [ class "tc mt4" ] [ renderBoard model.board ]
+        [ div [ class "mt4" ] [ renderBoard model.board ]
         , button [ onClick AddPieces ] [ text "add pieces" ]
         ]

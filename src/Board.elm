@@ -60,18 +60,18 @@ tileColor tile =
     in
     case status of
         Legal ->
-            "bg-green"
+            "bg-green "
 
         Illegal ->
-            "bg-red"
+            "bg-red "
 
         OutOfBounds ->
-            "bg-gray"
+            "bg-gray "
 
 
 tileDiv : Tile -> Html msg
 tileDiv tile =
-    div [ class <| "w3 h3 dib " ++ tileColor tile ] [ p [] [] ]
+    div [ class <| tileColor tile ++ "flex h3 items-center justify-center w3" ] [ p [ class "tc" ] [ text "1" ] ]
 
 
 chunk : Int -> List a -> List (List a) -> List (List a)
@@ -90,9 +90,9 @@ splitBoardIntoRows tileList =
 
 renderRow : List Tile -> Html msg
 renderRow tileList =
-    div [] <| List.map tileDiv tileList
+    div [ class "flex justify-center" ] <| List.map tileDiv tileList
 
 
 renderBoard : List Tile -> Html msg
 renderBoard tileList =
-    div [] <| List.map renderRow <| splitBoardIntoRows tileList
+    div [ class "blah" ] <| List.map renderRow <| splitBoardIntoRows tileList
