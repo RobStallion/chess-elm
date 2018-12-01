@@ -1,4 +1,4 @@
-module Types exposing (Board, Color(..), Piece(..), Status(..), Tile)
+module Types exposing (Board, Color(..), Model, Msg(..), Piece(..), Status(..), Tile)
 
 
 type alias Board =
@@ -27,3 +27,11 @@ type Piece
 type Color
     = Light
     | Dark
+
+
+type alias Model =
+    { board : Board }
+
+
+type Msg
+    = AddPieces

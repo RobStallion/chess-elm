@@ -80,22 +80,23 @@ lightOrDarkTile tile =
         "c-bg-dark "
 
 
-tileColor : Tile -> String
-tileColor tile =
+tileClasses : Tile -> String
+tileClasses tile =
     case tileStatus tile of
         Legal ->
-            lightOrDarkTile tile
+            lightOrDarkTile tile ++ "flex h3 items-center justify-center w3"
 
         Illegal ->
             "bg-red "
 
         OutOfBounds ->
-            "bg-gray "
+            -- will be dn in future
+            "bg-gray flex h3 items-center justify-center w3"
 
 
 tileDiv : Tile -> Html msg
 tileDiv tile =
-    div [ class <| tileColor tile ++ "flex h3 items-center justify-center w3" ]
+    div [ class <| tileClasses tile ]
         [ p [ class "tc" ] [ text <| String.fromInt <| tileCoordinate tile ]
         ]
 

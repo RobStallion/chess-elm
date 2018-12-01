@@ -5201,15 +5201,15 @@ var author$project$Board$tileStatus = function (tile) {
 	var status = _n0.b;
 	return status;
 };
-var author$project$Board$tileColor = function (tile) {
+var author$project$Board$tileClasses = function (tile) {
 	var _n0 = author$project$Board$tileStatus(tile);
 	switch (_n0.$) {
 		case 'Legal':
-			return author$project$Board$lightOrDarkTile(tile);
+			return author$project$Board$lightOrDarkTile(tile) + 'flex h3 items-center justify-center w3';
 		case 'Illegal':
 			return 'bg-red ';
 		default:
-			return 'bg-gray ';
+			return 'bg-gray flex h3 items-center justify-center w3';
 	}
 };
 var elm$core$Basics$identity = function (x) {
@@ -5574,7 +5574,7 @@ var author$project$Board$tileDiv = function (tile) {
 		_List_fromArray(
 			[
 				elm$html$Html$Attributes$class(
-				author$project$Board$tileColor(tile) + 'flex h3 items-center justify-center w3')
+				author$project$Board$tileClasses(tile))
 			]),
 		_List_fromArray(
 			[
@@ -5781,7 +5781,7 @@ var author$project$Board$renderBoard = function (tileList) {
 			author$project$Board$renderRow,
 			author$project$Board$splitBoardIntoRows(tileList)));
 };
-var author$project$Main$AddPieces = {$: 'AddPieces'};
+var author$project$Types$AddPieces = {$: 'AddPieces'};
 var elm$html$Html$button = _VirtualDom_node('button');
 var elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
@@ -5820,7 +5820,7 @@ var author$project$Main$view = function (model) {
 				elm$html$Html$button,
 				_List_fromArray(
 					[
-						elm$html$Html$Events$onClick(author$project$Main$AddPieces)
+						elm$html$Html$Events$onClick(author$project$Types$AddPieces)
 					]),
 				_List_fromArray(
 					[
@@ -10004,4 +10004,4 @@ var elm$browser$Browser$sandbox = function (impl) {
 var author$project$Main$main = elm$browser$Browser$sandbox(
 	{init: author$project$Main$init, update: author$project$Main$update, view: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
-	elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{},"unions":{"Main.Msg":{"args":[],"tags":{"AddPieces":[]}}}}})}});}(this));
+	elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.0"},"types":{"message":"Types.Msg","aliases":{},"unions":{"Types.Msg":{"args":[],"tags":{"AddPieces":[]}}}}})}});}(this));

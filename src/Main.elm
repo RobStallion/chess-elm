@@ -1,4 +1,4 @@
-module Main exposing (Model)
+module Main exposing (createPiece, init, main, update, view)
 
 -- import Board exposing (..)
 
@@ -12,14 +12,6 @@ import Types exposing (..)
 
 main =
     Browser.sandbox { init = init, update = update, view = view }
-
-
-type alias Model =
-    { board : Board }
-
-
-type Msg
-    = AddPieces
 
 
 init : Model
