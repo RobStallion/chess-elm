@@ -1,4 +1,4 @@
-module Types exposing (Board, Color(..), Model, Msg(..), Piece(..), Status(..), Tile)
+module Types exposing (Board, Color(..), Model, Msg(..), Piece, PieceType(..), Status(..), Tile)
 
 
 type alias Board =
@@ -15,7 +15,13 @@ type Status
     | OutOfBounds
 
 
-type Piece
+type alias Piece =
+    { piece : PieceType
+    , color : Color
+    }
+
+
+type PieceType
     = King
     | Queen
     | Rook

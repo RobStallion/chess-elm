@@ -1,10 +1,8 @@
-module Main exposing (createPiece, init, main, update, view)
+module Main exposing (init, main, update, view)
 
--- import Board exposing (..)
-
-import Board exposing (createBoard, renderBoard)
+import Board exposing (..)
 import Browser
-import Html exposing (Html, button, div, li, p, text)
+import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Types exposing (..)
@@ -16,7 +14,7 @@ main =
 
 init : Model
 init =
-    { board = createBoard }
+    { board = startingBoard }
 
 
 update : Msg -> Model -> Model
@@ -24,28 +22,6 @@ update msg model =
     case msg of
         AddPieces ->
             model
-
-
-createPiece : Piece -> String
-createPiece piece =
-    case piece of
-        King ->
-            "K"
-
-        Queen ->
-            "Q"
-
-        Rook ->
-            "R"
-
-        Bishop ->
-            "B"
-
-        Knight ->
-            "N"
-
-        Pawn ->
-            "P"
 
 
 view : Model -> Html Msg
