@@ -2,7 +2,7 @@ module Main exposing (Model)
 
 -- import Board exposing (..)
 
-import Board exposing (createBoard, outOfBounds, renderBoard)
+import Board exposing (createBoard, renderBoard)
 import Browser
 import Html exposing (Html, button, div, li, p, text)
 import Html.Attributes exposing (class)

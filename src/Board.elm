@@ -1,4 +1,4 @@
-module Board exposing (boardSize, createBoard, createTile, getTileStatus, isTileOutOfBounds, outOfBounds, renderBoard, tileDiv)
+module Board exposing (createBoard, renderBoard)
 
 import Browser
 import Html exposing (Html, div, p, text)
