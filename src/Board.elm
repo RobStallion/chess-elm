@@ -1,41 +1,10 @@
 module Board exposing (renderBoard, startingBoard)
 
 import Browser
-import Html exposing (Html, div, p, text)
-import Html.Attributes exposing (class)
+import Html exposing (Html, div, img, p, text)
+import Html.Attributes exposing (class, src)
+import Html.Events exposing (onClick)
 import Types exposing (..)
-
-
-pieceToText : PieceType -> String
-pieceToText piece =
-    case piece of
-        King ->
-            "K"
-
-        Queen ->
-            "Q"
-
-        Rook ->
-            "R"
-
-        Bishop ->
-            "B"
-
-        Knight ->
-            "N"
-
-        Pawn ->
-            "P"
-
-
-colorToText : Color -> String
-colorToText color =
-    case color of
-        Light ->
-            "L"
-
-        Dark ->
-            "D"
 
 
 
@@ -74,37 +43,44 @@ getTile int board =
 -- Render board functions
 
 
-renderBoard : Board -> Html msg
+renderBoard : Board -> Html Msg
 renderBoard tileList =
-    div [ class "blah" ] <| List.map renderRow <| splitBoardIntoRows tileList
+    div [ class "" ] <| List.map renderRow <| splitBoardIntoRows tileList
 
 
-renderRow : List Tile -> Html msg
+renderRow : List Tile -> Html Msg
 renderRow tileList =
     div [ class "flex justify-center" ] <| List.map renderTile tileList
 
 
-renderTile : Tile -> Html msg
+renderTile : Tile -> Html Msg
 renderTile tile =
     div [ class <| tileClasses tile ]
-        [ p [ class "tc" ] [ tilePieceText tile ]
+        [ displayInTile tile
         ]
 
 
-tilePieceText : Tile -> Html msg
-tilePieceText tile =
+displayInTile : Tile -> Html Msg
+displayInTile tile =
     let
         piece =
             Maybe.withDefault (Piece King Light) (tilePiece tile)
 
-        tileText =
+        inTileHtml =
             if tilePiece tile == Nothing then
-                String.fromInt <| tileCoordinate tile
+                p [ class "tc" ] [ text <| String.fromInt <| tileCoordinate tile ]
 
             else
-                colorToText piece.color ++ pieceToText piece.piece
+                div [ class "h3 w3 flex items-center justify-center", onClick AddPieces ]
+                    [ img [ src <| makePieceImgStr piece, class "w2-5" ] []
+                    ]
     in
-    text tileText
+    inTileHtml
+
+
+makePieceImgStr : Piece -> String
+makePieceImgStr piece =
+    "images/" ++ colorToText piece.color ++ pieceToText piece.piece ++ ".svg"
 
 
 splitBoardIntoRows : Board -> List (List Tile)
@@ -119,6 +95,42 @@ chunk int list acc =
 
     else
         chunk int (List.drop int list) acc ++ [ List.take int list ]
+
+
+
+-- pieceToText and colorToText will be replaced with images in later commit
+
+
+pieceToText : PieceType -> String
+pieceToText piece =
+    case piece of
+        King ->
+            "k"
+
+        Queen ->
+            "q"
+
+        Rook ->
+            "r"
+
+        Bishop ->
+            "b"
+
+        Knight ->
+            "n"
+
+        Pawn ->
+            "p"
+
+
+colorToText : Color -> String
+colorToText color =
+    case color of
+        Light ->
+            "l"
+
+        Dark ->
+            "d"
 
 
 
@@ -195,14 +207,14 @@ tileClasses : Tile -> String
 tileClasses tile =
     case tileStatus tile of
         Legal ->
-            lightOrDarkTile tile ++ "flex h3 items-center justify-center w3"
+            lightOrDarkTile tile ++ "h3 w3 flex items-center justify-center"
 
         Illegal ->
             "bg-red "
 
         OutOfBounds ->
             -- will be dn in future
-            "bg-gray flex h3 items-center justify-center w3"
+            "h3 w3 flex items-center justify-center bg-gray"
 
 
 lightOrDarkTile : Tile -> String
