@@ -6,7 +6,7 @@ type alias Board =
 
 
 type alias Tile =
-    ( Int, Status, Maybe Piece )
+    { index : Int, status : Status, piece : Maybe Piece }
 
 
 type Status
