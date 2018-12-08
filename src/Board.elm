@@ -28,7 +28,7 @@ updateBoard index piece board =
 
 updateTilePiece : Piece -> Tile -> Tile
 updateTilePiece piece tile =
-    ( tileCoordinate tile, tileStatus tile, Just piece )
+    Tile tile.index tile.status <| Just piece
 
 
 getTile : Int -> Board -> Tile
@@ -36,7 +36,7 @@ getTile int board =
     board
         |> List.drop (int - 1)
         |> List.head
-        |> Maybe.withDefault ( 0, Legal, Nothing )
+        |> Maybe.withDefault (Tile 0 Legal Nothing)
 
 
 
@@ -44,34 +44,34 @@ getTile int board =
 
 
 renderBoard : Board -> Html Msg
-renderBoard tileList =
-    div [ class "" ] <| List.map renderRow <| splitBoardIntoRows tileList
+renderBoard board =
+    div [ class "" ] <| List.map (renderRow board) <| splitBoardIntoRows board
 
 
-renderRow : List Tile -> Html Msg
-renderRow tileList =
-    div [ class "flex justify-center" ] <| List.map renderTile tileList
+renderRow : Board -> List Tile -> Html Msg
+renderRow board tileList =
+    div [ class "flex justify-center" ] <| List.map (renderTile board) tileList
 
 
-renderTile : Tile -> Html Msg
-renderTile tile =
+renderTile : Board -> Tile -> Html Msg
+renderTile board tile =
     div [ class <| tileClasses tile ]
-        [ displayInTile tile
+        [ displayInTile board tile
         ]
 
 
-displayInTile : Tile -> Html Msg
-displayInTile tile =
+displayInTile : Board -> Tile -> Html Msg
+displayInTile board tile =
     let
         piece =
-            Maybe.withDefault (Piece King Light) (tilePiece tile)
+            Maybe.withDefault (Piece King Light) tile.piece
 
         inTileHtml =
-            if tilePiece tile == Nothing then
-                p [ class "tc" ] [ text <| String.fromInt <| tileCoordinate tile ]
+            if tile.piece == Nothing then
+                p [ class "tc" ] [ text <| String.fromInt <| tile.index ]
 
             else
-                div [ class "h3 w3 flex items-center justify-center", onClick AddPieces ]
+                div [ class "h3 w3 flex items-center justify-center", onClick <| CheckAvailableMoves tile board ]
                     [ img [ src <| makePieceImgStr piece, class "w2-5" ] []
                     ]
     in
@@ -80,7 +80,7 @@ displayInTile tile =
 
 makePieceImgStr : Piece -> String
 makePieceImgStr piece =
-    "images/" ++ colorToText piece.color ++ pieceToText piece.piece ++ ".svg"
+    "images/" ++ colorToText piece.colour ++ pieceToText piece.piece ++ ".svg"
 
 
 splitBoardIntoRows : Board -> List (List Tile)
@@ -123,9 +123,9 @@ pieceToText piece =
             "p"
 
 
-colorToText : Color -> String
-colorToText color =
-    case color of
+colorToText : Colour -> String
+colorToText colour =
+    case colour of
         Light ->
             "l"
 
@@ -173,12 +173,12 @@ addPiecesToBoard intList piece board =
 
 createBoard : Board
 createBoard =
-    List.map createTile <| List.range 1 100
+    List.map createEmptyTile <| List.range 1 100
 
 
-createTile : Int -> Tile
-createTile int =
-    ( int, getTileStatus int, Nothing )
+createEmptyTile : Int -> Tile
+createEmptyTile index =
+    Tile index (getTileStatus index) Nothing
 
 
 getTileStatus : Int -> Status
@@ -205,12 +205,9 @@ outOfBoundsList =
 
 tileClasses : Tile -> String
 tileClasses tile =
-    case tileStatus tile of
+    case tile.status of
         Legal ->
             lightOrDarkTile tile ++ "h3 w3 flex items-center justify-center"
-
-        Illegal ->
-            "bg-red "
 
         OutOfBounds ->
             -- will be dn in future
@@ -219,7 +216,7 @@ tileClasses tile =
 
 lightOrDarkTile : Tile -> String
 lightOrDarkTile tile =
-    if isEven <| sumOfCoordinate tile then
+    if isEven <| sumOfIndex tile then
         "c-bg-light "
 
     else
@@ -231,42 +228,10 @@ isEven int =
     0 == modBy 2 int
 
 
-sumOfCoordinate : Tile -> Int
-sumOfCoordinate tile =
-    tile
-        |> tileCoordinate
+sumOfIndex : Tile -> Int
+sumOfIndex tile =
+    tile.index
         |> String.fromInt
         |> String.split ""
         |> List.map String.toInt
         |> List.foldl (\maybeN acc -> Maybe.withDefault 0 maybeN + acc) 0
-
-
-
--- Tile helpers
-
-
-tileCoordinate : Tile -> Int
-tileCoordinate tile =
-    let
-        ( coordinate, _, _ ) =
-            tile
-    in
-    coordinate
-
-
-tileStatus : Tile -> Status
-tileStatus tile =
-    let
-        ( _, status, _ ) =
-            tile
-    in
-    status
-
-
-tilePiece : Tile -> Maybe Piece
-tilePiece tile =
-    let
-        ( _, _, piece ) =
-            tile
-    in
-    piece

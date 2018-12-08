@@ -20,7 +20,7 @@ init =
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        AddPieces ->
+        CheckAvailableMoves tile board ->
             model
 
 
@@ -28,5 +28,4 @@ view : Model -> Html Msg
 view model =
     div []
         [ div [ class "mt4" ] [ renderBoard model.board ]
-        , button [ onClick AddPieces ] [ text "add pieces" ]
         ]
