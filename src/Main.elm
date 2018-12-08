@@ -20,7 +20,7 @@ init =
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        AddPieces ->
+        CheckAvailableMoves tile board ->
             model
 
 

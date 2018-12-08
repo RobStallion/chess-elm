@@ -44,24 +44,24 @@ getTile int board =
 
 
 renderBoard : Board -> Html Msg
-renderBoard tileList =
-    div [ class "" ] <| List.map renderRow <| splitBoardIntoRows tileList
+renderBoard board =
+    div [ class "" ] <| List.map (renderRow board) <| splitBoardIntoRows board
 
 
-renderRow : List Tile -> Html Msg
-renderRow tileList =
-    div [ class "flex justify-center" ] <| List.map renderTile tileList
+renderRow : Board -> List Tile -> Html Msg
+renderRow board tileList =
+    div [ class "flex justify-center" ] <| List.map (renderTile board) tileList
 
 
-renderTile : Tile -> Html Msg
-renderTile tile =
+renderTile : Board -> Tile -> Html Msg
+renderTile board tile =
     div [ class <| tileClasses tile ]
-        [ displayInTile tile
+        [ displayInTile board tile
         ]
 
 
-displayInTile : Tile -> Html Msg
-displayInTile tile =
+displayInTile : Board -> Tile -> Html Msg
+displayInTile board tile =
     let
         piece =
             Maybe.withDefault (Piece King Light) tile.piece
@@ -71,7 +71,7 @@ displayInTile tile =
                 p [ class "tc" ] [ text <| String.fromInt <| tile.index ]
 
             else
-                div [ class "h3 w3 flex items-center justify-center", onClick AddPieces ]
+                div [ class "h3 w3 flex items-center justify-center", onClick <| CheckAvailableMoves tile board ]
                     [ img [ src <| makePieceImgStr piece, class "w2-5" ] []
                     ]
     in

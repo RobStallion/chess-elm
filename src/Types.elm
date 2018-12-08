@@ -40,4 +40,4 @@ type alias Model =
 
 
 type Msg
-    = AddPieces
+    = CheckAvailableMoves Tile Board
