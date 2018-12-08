@@ -11,7 +11,6 @@ type alias Tile =
 
 type Status
     = Legal
-    | Illegal
     | OutOfBounds
 
 

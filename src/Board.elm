@@ -209,9 +209,6 @@ tileClasses tile =
         Legal ->
             lightOrDarkTile tile ++ "h3 w3 flex items-center justify-center"
 
-        Illegal ->
-            "bg-red "
-
         OutOfBounds ->
             -- will be dn in future
             "h3 w3 flex items-center justify-center bg-gray"
