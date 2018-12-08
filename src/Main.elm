@@ -28,5 +28,4 @@ view : Model -> Html Msg
 view model =
     div []
         [ div [ class "mt4" ] [ renderBoard model.board ]
-        , button [ onClick AddPieces ] [ text "add pieces" ]
         ]

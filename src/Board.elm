@@ -7,11 +7,6 @@ import Html.Events exposing (onClick)
 import Types exposing (..)
 
 
-movePiece : Tile -> Board -> Board
-movePiece tile board =
-    []
-
-
 
 -- Update board functions
 
@@ -85,7 +80,7 @@ displayInTile tile =
 
 makePieceImgStr : Piece -> String
 makePieceImgStr piece =
-    "images/" ++ colorToText piece.color ++ pieceToText piece.piece ++ ".svg"
+    "images/" ++ colorToText piece.colour ++ pieceToText piece.piece ++ ".svg"
 
 
 splitBoardIntoRows : Board -> List (List Tile)
@@ -128,9 +123,9 @@ pieceToText piece =
             "p"
 
 
-colorToText : Color -> String
-colorToText color =
-    case color of
+colorToText : Colour -> String
+colorToText colour =
+    case colour of
         Light ->
             "l"
 
