@@ -1,4 +1,4 @@
-module Types exposing (Board, Colour(..), Model, Msg(..), Piece, PieceType(..), Status(..), Tile)
+module Types exposing (Board, Colour(..), Model, Msg(..), Piece, PieceStatus(..), PieceType(..), Tile, TileStatus(..))
 
 
 type alias Board =
@@ -6,17 +6,25 @@ type alias Board =
 
 
 type alias Tile =
-    { index : Int, status : Status, piece : Maybe Piece }
+    { index : Int, status : TileStatus }
 
 
-type Status
+type TileStatus
     = Legal
     | OutOfBounds
+
+
+
+-- Think about adding a piece number to piece
+-- This can be used as an easy way to make sure we are always moving the
+-- correct piece.
 
 
 type alias Piece =
     { piece : PieceType
     , colour : Colour
+    , index : Int
+    , status : PieceStatus
     }
 
 
@@ -34,9 +42,16 @@ type Colour
     | Dark
 
 
+type PieceStatus
+    = Alive
+    | Captured
+
+
 type alias Model =
-    { board : Board }
+    { board : Board
+    , pieces : List Piece
+    }
 
 
 type Msg
-    = CheckAvailableMoves Tile Board
+    = CheckAvailableMoves Piece
