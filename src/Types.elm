@@ -1,4 +1,12 @@
-module Types exposing (Board, Colour(..), Model, Msg(..), Piece, PieceType(..), Status(..), Tile)
+module Types exposing (Board, Colour(..), Model, Msg(..), Piece, PieceStatus(..), PieceType(..), Tile, TileStatus(..))
+
+import Array exposing (Array)
+
+
+type alias Model =
+    { board : Board
+    , pieces : List Piece
+    }
 
 
 type alias Board =
@@ -6,10 +14,10 @@ type alias Board =
 
 
 type alias Tile =
-    { index : Int, status : Status, piece : Maybe Piece }
+    { index : Int, status : TileStatus }
 
 
-type Status
+type TileStatus
     = Legal
     | OutOfBounds
 
@@ -17,6 +25,8 @@ type Status
 type alias Piece =
     { piece : PieceType
     , colour : Colour
+    , index : Int
+    , status : PieceStatus
     }
 
 
@@ -34,9 +44,10 @@ type Colour
     | Dark
 
 
-type alias Model =
-    { board : Board }
+type PieceStatus
+    = Alive
+    | Captured
 
 
 type Msg
-    = CheckAvailableMoves Tile Board
+    = CheckAvailableMoves Piece

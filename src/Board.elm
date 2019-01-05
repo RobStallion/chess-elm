@@ -1,193 +1,79 @@
-module Board exposing (renderBoard, startingBoard)
+module Board exposing (createBoard, outOfBoundsList, renderBoard)
 
-import Browser
-import Html exposing (Html, div, img, p, text)
-import Html.Attributes exposing (class, src)
+import Array exposing (Array)
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
+import Piece exposing (getPieceByIndex, pieceImgTag)
 import Types exposing (..)
 
 
 
--- Update board functions
+-- Render
 
 
-updateBoard : Int -> Piece -> Board -> Board
-updateBoard index piece board =
+renderBoard : List Piece -> Board -> Html Msg
+renderBoard pieceList board =
+    div [] <| List.map (renderRow pieceList) <| chunk 10 board []
+
+
+renderRow : List Piece -> List Tile -> Html Msg
+renderRow pieceList row =
+    div [ class "flex" ] <| List.map (renderTile pieceList) row
+
+
+renderTile : List Piece -> Tile -> Html Msg
+renderTile pieceList tile =
     let
-        updatedTile =
-            getTile index board |> updateTilePiece piece
-
-        beforeTile =
-            List.take (index - 1) board
-
-        afterTile =
-            List.drop index board
+        pieceIndexes =
+            List.map (\p -> p.index) pieceList
     in
-    beforeTile ++ updatedTile :: afterTile
+    if List.member tile.index pieceIndexes then
+        let
+            piece =
+                getPieceByIndex tile.index pieceList
+        in
+        if piece.status == Alive then
+            div [ class <| tileClasses tile, onClick <| CheckAvailableMoves piece ] [ pieceImgTag piece ]
 
-
-updateTilePiece : Piece -> Tile -> Tile
-updateTilePiece piece tile =
-    Tile tile.index tile.status <| Just piece
-
-
-getTile : Int -> Board -> Tile
-getTile int board =
-    board
-        |> List.drop (int - 1)
-        |> List.head
-        |> Maybe.withDefault (Tile 0 Legal Nothing)
-
-
-
--- Render board functions
-
-
-renderBoard : Board -> Html Msg
-renderBoard board =
-    div [ class "" ] <| List.map (renderRow board) <| splitBoardIntoRows board
-
-
-renderRow : Board -> List Tile -> Html Msg
-renderRow board tileList =
-    div [ class "flex justify-center" ] <| List.map (renderTile board) tileList
-
-
-renderTile : Board -> Tile -> Html Msg
-renderTile board tile =
-    div [ class <| tileClasses tile ]
-        [ displayInTile board tile
-        ]
-
-
-displayInTile : Board -> Tile -> Html Msg
-displayInTile board tile =
-    let
-        piece =
-            Maybe.withDefault (Piece King Light) tile.piece
-
-        inTileHtml =
-            if tile.piece == Nothing then
-                p [ class "tc" ] [ text <| String.fromInt <| tile.index ]
-
-            else
-                div [ class "h3 w3 flex items-center justify-center", onClick <| CheckAvailableMoves tile board ]
-                    [ img [ src <| makePieceImgStr piece, class "w2-5" ] []
-                    ]
-    in
-    inTileHtml
-
-
-makePieceImgStr : Piece -> String
-makePieceImgStr piece =
-    "images/" ++ colorToText piece.colour ++ pieceToText piece.piece ++ ".svg"
-
-
-splitBoardIntoRows : Board -> List (List Tile)
-splitBoardIntoRows tileList =
-    chunk 10 tileList []
-
-
-chunk : Int -> List a -> List (List a) -> List (List a)
-chunk int list acc =
-    if List.length list <= int then
-        acc ++ [ list ]
+        else
+            div [ class <| tileClasses tile ] [ text <| String.fromInt tile.index ]
 
     else
-        chunk int (List.drop int list) acc ++ [ List.take int list ]
+        div [ class <| tileClasses tile ] [ text <| String.fromInt tile.index ]
 
 
 
--- pieceToText and colorToText will be replaced with images in later commit
-
-
-pieceToText : PieceType -> String
-pieceToText piece =
-    case piece of
-        King ->
-            "k"
-
-        Queen ->
-            "q"
-
-        Rook ->
-            "r"
-
-        Bishop ->
-            "b"
-
-        Knight ->
-            "n"
-
-        Pawn ->
-            "p"
-
-
-colorToText : Colour -> String
-colorToText colour =
-    case colour of
-        Light ->
-            "l"
-
-        Dark ->
-            "d"
-
-
-
--- Create board functions
-
-
-addDarkRooks : Board -> Board
-addDarkRooks board =
-    addPiecesToBoard [ 82, 89 ] (Piece Rook Dark) board
-
-
-addDarkPawns : Board -> Board
-addDarkPawns board =
-    addPiecesToBoard (List.range 72 79) (Piece Pawn Dark) board
-
-
-startingBoard : Board
-startingBoard =
-    createBoard
-        -- Light pieces
-        |> addPiecesToBoard (List.range 22 29) (Piece Pawn Light)
-        |> addPiecesToBoard [ 12, 19 ] (Piece Rook Light)
-        |> addPiecesToBoard [ 13, 18 ] (Piece Knight Light)
-        |> addPiecesToBoard [ 14, 17 ] (Piece Bishop Light)
-        |> addPiecesToBoard [ 15 ] (Piece Queen Light)
-        |> addPiecesToBoard [ 16 ] (Piece King Light)
-        -- Dark pieces
-        |> addPiecesToBoard (List.range 72 79) (Piece Pawn Dark)
-        |> addPiecesToBoard [ 82, 89 ] (Piece Rook Dark)
-        |> addPiecesToBoard [ 83, 88 ] (Piece Knight Dark)
-        |> addPiecesToBoard [ 84, 87 ] (Piece Bishop Dark)
-        |> addPiecesToBoard [ 85 ] (Piece Queen Dark)
-        |> addPiecesToBoard [ 86 ] (Piece King Dark)
-
-
-addPiecesToBoard : List Int -> Piece -> Board -> Board
-addPiecesToBoard intList piece board =
-    List.foldl (\i acc -> updateBoard i piece acc) board intList
+-- Create
 
 
 createBoard : Board
 createBoard =
-    List.map createEmptyTile <| List.range 1 100
+    List.range 1 100
+        |> List.map createEmptyTile
 
 
 createEmptyTile : Int -> Tile
 createEmptyTile index =
-    Tile index (getTileStatus index) Nothing
+    Tile index (emptyTileStatus index)
 
 
-getTileStatus : Int -> Status
-getTileStatus int =
+emptyTileStatus : Int -> TileStatus
+emptyTileStatus int =
     if isIndexOutOfBounds int then
         OutOfBounds
 
     else
         Legal
+
+
+
+-- Helpers
+
+
+isEven : Int -> Bool
+isEven int =
+    0 == modBy 2 int
 
 
 isIndexOutOfBounds : Int -> Bool
@@ -210,7 +96,6 @@ tileClasses tile =
             lightOrDarkTile tile ++ "h3 w3 flex items-center justify-center"
 
         OutOfBounds ->
-            -- will be dn in future
             "h3 w3 flex items-center justify-center bg-gray"
 
 
@@ -223,11 +108,6 @@ lightOrDarkTile tile =
         "c-bg-dark "
 
 
-isEven : Int -> Bool
-isEven int =
-    0 == modBy 2 int
-
-
 sumOfIndex : Tile -> Int
 sumOfIndex tile =
     tile.index
@@ -235,3 +115,12 @@ sumOfIndex tile =
         |> String.split ""
         |> List.map String.toInt
         |> List.foldl (\maybeN acc -> Maybe.withDefault 0 maybeN + acc) 0
+
+
+chunk : Int -> List a -> List (List a) -> List (List a)
+chunk int list acc =
+    if List.length list <= int then
+        acc ++ [ list ]
+
+    else
+        chunk int (List.drop int list) acc ++ [ List.take int list ]
