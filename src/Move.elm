@@ -80,10 +80,6 @@ pawnMoves piece =
         |> checkTwoTileMove piece
 
 
-
--- if pawn is on home square, (for now) remove the plus 20 move
-
-
 checkTwoTileMove : Piece -> List Int -> List Int
 checkTwoTileMove piece moves =
     if isPawnOnStartingPosition piece then
