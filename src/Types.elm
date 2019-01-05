@@ -1,5 +1,13 @@
 module Types exposing (Board, Colour(..), Model, Msg(..), Piece, PieceStatus(..), PieceType(..), Tile, TileStatus(..))
 
+import Array exposing (Array)
+
+
+type alias Model =
+    { board : Board
+    , pieces : List Piece
+    }
+
 
 type alias Board =
     List Tile
@@ -12,12 +20,6 @@ type alias Tile =
 type TileStatus
     = Legal
     | OutOfBounds
-
-
-
--- Think about adding a piece number to piece
--- This can be used as an easy way to make sure we are always moving the
--- correct piece.
 
 
 type alias Piece =
@@ -45,12 +47,6 @@ type Colour
 type PieceStatus
     = Alive
     | Captured
-
-
-type alias Model =
-    { board : Board
-    , pieces : List Piece
-    }
 
 
 type Msg
