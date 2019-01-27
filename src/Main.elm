@@ -28,8 +28,14 @@ update msg model =
     case msg of
         CheckAvailableMoves piece ->
             let
+                possMoves =
+                    getPossibleMoves piece
+
+                poss =
+                    List.filter (\index -> not <| doesTileContainPiece piece index model) possMoves
+
                 _ =
-                    Debug.log "" <| getPossibleMoves piece
+                    Debug.log "" poss
             in
             -- { model | pieces = List.Extra.updateAt 0 movePiece model.pieces }
             model
@@ -42,3 +48,13 @@ view model =
             [ renderBoard model.pieces model.board
             ]
         ]
+
+
+doesTileContainPiece : Piece -> Int -> Model -> Bool
+doesTileContainPiece currentPiece index model =
+    case List.filter (\piece -> piece.index == index) model.pieces of
+        [ piece ] ->
+            currentPiece.colour == piece.colour
+
+        _ ->
+            False
