@@ -18,7 +18,7 @@ type alias Tile =
 
 
 type TileStatus
-    = Legal
+    = WithinBounds
     | OutOfBounds
 
 

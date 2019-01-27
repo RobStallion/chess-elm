@@ -64,7 +64,7 @@ emptyTileStatus int =
         OutOfBounds
 
     else
-        Legal
+        WithinBounds
 
 
 
@@ -92,7 +92,7 @@ outOfBoundsList =
 tileClasses : Tile -> String
 tileClasses tile =
     case tile.status of
-        Legal ->
+        WithinBounds ->
             lightOrDarkTile tile ++ "h3 w3 flex items-center justify-center"
 
         OutOfBounds ->
