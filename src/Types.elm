@@ -1,6 +1,7 @@
 module Types exposing (Board, Colour(..), Model, Msg(..), Piece, PieceStatus(..), PieceType(..), Tile, TileStatus(..))
 
 import Array exposing (Array)
+import Dict exposing (Dict)
 
 
 type alias Model =
@@ -10,7 +11,7 @@ type alias Model =
 
 
 type alias Board =
-    List Tile
+    Dict Int Tile
 
 
 type alias Tile =
