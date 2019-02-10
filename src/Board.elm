@@ -1,6 +1,7 @@
 module Board exposing (createBoard, outOfBoundsList, renderBoard)
 
 import Array exposing (Array)
+import Dict
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
@@ -8,13 +9,13 @@ import Piece exposing (getPieceByIndex, pieceImgTag)
 import Types exposing (..)
 
 
-
--- Render
-
-
 renderBoard : List Piece -> Board -> Html Msg
 renderBoard pieceList board =
-    div [] <| List.map (renderRow pieceList) <| chunk 10 board []
+    let
+        boardList =
+            Dict.values board
+    in
+    div [] <| List.map (renderRow pieceList) <| chunk 10 boardList []
 
 
 renderRow : List Piece -> List Tile -> Html Msg
@@ -50,7 +51,8 @@ renderTile pieceList tile =
 createBoard : Board
 createBoard =
     List.range 1 100
-        |> List.map createEmptyTile
+        |> List.map (\i -> ( i, createEmptyTile i ))
+        |> Dict.fromList
 
 
 createEmptyTile : Int -> Tile
