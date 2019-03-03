@@ -6,7 +6,6 @@ import Dict exposing (Dict)
 
 type alias Model =
     { board : Board
-    , pieces : List Piece
     }
 
 
@@ -15,7 +14,7 @@ type alias Board =
 
 
 type alias Tile =
-    { index : Int, status : TileStatus }
+    { status : TileStatus, piece : Maybe Piece }
 
 
 type TileStatus
@@ -24,9 +23,8 @@ type TileStatus
 
 
 type alias Piece =
-    { piece : PieceType
+    { pieceType : PieceType
     , colour : Colour
-    , index : Int
     , status : PieceStatus
     }
 
@@ -51,4 +49,4 @@ type PieceStatus
 
 
 type Msg
-    = CheckAvailableMoves Piece
+    = CheckAvailableMoves Int
