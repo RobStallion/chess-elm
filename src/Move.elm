@@ -35,8 +35,7 @@ getPossibleMoves tileIndex board =
                     knightMoves tileIndex piece board
 
                 Pawn ->
-                    -- pawnMoves tileIndex piece board
-                    []
+                    pawnMoves tileIndex piece board
 
 
 kingMoves : Int -> Piece -> Board -> List Int
@@ -77,6 +76,85 @@ knightMoves tileIndex piece board =
         |> List.filter (\i -> not <| doesTileContainSameColourPiece i piece board)
 
 
+pawnMoves : Int -> Piece -> Board -> List Int
+pawnMoves tileIndex piece board =
+    case piece.colour of
+        Light ->
+            lightPawnMoves tileIndex piece board
+
+        Dark ->
+            darkPawnMoves tileIndex piece board
+
+
+lightPawnMoves : Int -> Piece -> Board -> List Int
+lightPawnMoves tileIndex clickedPiece board =
+    let
+        possMoves =
+            if isTileFree (tileIndex + 10) board && isTileFree (tileIndex + 20) board then
+                [ tileIndex + 10, tileIndex + 20 ]
+
+            else if isTileFree (tileIndex + 10) board then
+                [ tileIndex + 10 ]
+
+            else
+                []
+    in
+    possMoves
+        |> checkTile tileIndex clickedPiece board 9
+        |> checkTile tileIndex clickedPiece board 11
+
+
+darkPawnMoves : Int -> Piece -> Board -> List Int
+darkPawnMoves tileIndex clickedPiece board =
+    let
+        possMoves =
+            if isTileFree (tileIndex - 10) board && isTileFree (tileIndex - 20) board then
+                [ tileIndex - 10, tileIndex - 20 ]
+
+            else if isTileFree (tileIndex - 10) board then
+                [ tileIndex - 10 ]
+
+            else
+                []
+    in
+    possMoves
+        |> checkTile tileIndex clickedPiece board -9
+        |> checkTile tileIndex clickedPiece board -11
+
+
+allowTwoSpaceMove : Int -> Piece -> Int -> List Int -> List Int
+allowTwoSpaceMove tileIndex clickedPiece count intList =
+    if List.member tileIndex (pawnHomeIndexes clickedPiece) then
+        (tileIndex + count) :: intList
+
+    else
+        intList
+
+
+checkTile : Int -> Piece -> Board -> Int -> List Int -> List Int
+checkTile tileIndex clickedPiece board count intList =
+    case getTilePiece (tileIndex + count) board of
+        Nothing ->
+            intList
+
+        Just piece ->
+            if sameTeam clickedPiece piece then
+                intList
+
+            else
+                (tileIndex + count) :: intList
+
+
+pawnHomeIndexes : Piece -> List Int
+pawnHomeIndexes piece =
+    case piece.colour of
+        Light ->
+            List.range 22 29
+
+        Dark ->
+            List.range 71 79
+
+
 
 -- pawnMoves : Int -> Piece -> Board -> List Int
 -- pawnMoves tileIndex piece board =
@@ -109,14 +187,6 @@ knightMoves tileIndex piece board =
 --     List.member tileIndex <| pawnHomeIndexes piece
 --
 --
--- pawnHomeIndexes : Piece -> List Int
--- pawnHomeIndexes piece =
---     case piece.colour of
---         Light ->
---             List.range 22 29
---
---         Dark ->
---             List.range 71 79
 
 
 addMovesToList : Int -> Piece -> Board -> Int -> List Int -> List Int
@@ -134,6 +204,20 @@ addMovesToList tileIndex piece board count acc =
 getTilePiece : Int -> Board -> Maybe Piece
 getTilePiece tileIndex board =
     board |> getTile tileIndex |> .piece
+
+
+isTileFree : Int -> Board -> Bool
+isTileFree tileIndex board =
+    board
+        |> getTilePiece tileIndex
+        |> (\maybePiece ->
+                case maybePiece of
+                    Nothing ->
+                        True
+
+                    Just piece ->
+                        False
+           )
 
 
 doesTileContainOpposingPiece : Int -> Piece -> Board -> Bool

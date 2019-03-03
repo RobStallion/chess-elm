@@ -63,14 +63,6 @@ createTiles int =
 
     else if int == darkQueenIndex then
         addPieceToTile <| Piece Queen Dark Alive
-        -- else if int == 32 then
-        --     addPieceToTile <| Piece Rook Light Alive
-        -- else if int == 33 then
-        --     addPieceToTile <| Piece Bishop Light Alive
-        -- else if int == 34 then
-        --     addPieceToTile <| Piece Queen Light Alive
-        -- else if int == 35 then
-        --     addPieceToTile <| Piece Pawn Light Alive
 
     else
         createEmptyTile int

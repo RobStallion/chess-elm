@@ -21,5 +21,4 @@ update msg model =
                 _ =
                     Debug.log "" possMoves
             in
-            -- { model | pieces = List.Extra.updateAt 0 movePiece model.pieces }
             model
