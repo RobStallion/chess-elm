@@ -1,63 +1,154 @@
-module Board exposing (createBoard, outOfBoundsList, renderBoard)
+module Board exposing (getTile, outOfBoundsList, startingBoard)
 
-import Array exposing (Array)
 import Dict
-import Html exposing (Html, div, text)
-import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
-import Piece exposing (getPieceByIndex, pieceImgTag)
 import Types exposing (..)
 
 
-renderBoard : List Piece -> Board -> Html Msg
-renderBoard pieceList board =
-    let
-        boardList =
-            Dict.values board
-    in
-    div [] <| List.map (renderRow pieceList) <| chunk 10 boardList []
+startingBoard : Board
+startingBoard =
+    List.range 1 100
+        |> List.map (\i -> ( i, createTiles i ))
+        |> Dict.fromList
 
 
-renderRow : List Piece -> List Tile -> Html Msg
-renderRow pieceList row =
-    div [ class "flex" ] <| List.map (renderTile pieceList) row
+outOfBoundsList : List Int
+outOfBoundsList =
+    List.range 1 10
+        ++ List.range 91 100
+        ++ (List.map (\n -> n * 10 + 1) <| List.range 1 8)
+        ++ (List.map (\n -> n * 10) <| List.range 2 9)
 
 
-renderTile : List Piece -> Tile -> Html Msg
-renderTile pieceList tile =
-    let
-        pieceIndexes =
-            List.map (\p -> p.index) pieceList
-    in
-    if List.member tile.index pieceIndexes then
-        let
-            piece =
-                getPieceByIndex tile.index pieceList
-        in
-        if piece.status == Alive then
-            div [ class <| tileClasses tile, onClick <| CheckAvailableMoves piece ] [ pieceImgTag piece ]
+getTile : Int -> Board -> Tile
+getTile tileIndex board =
+    board
+        |> Dict.get tileIndex
+        |> Maybe.withDefault (Tile WithinBounds Nothing)
 
-        else
-            div [ class <| tileClasses tile ] [ text <| String.fromInt tile.index ]
+
+createTiles : Int -> Tile
+createTiles int =
+    if isPiece int lightPawnIndexes then
+        addPieceToTile <| Piece Pawn Light Alive
+
+    else if isPiece int lightRookIndexes then
+        addPieceToTile <| Piece Rook Light Alive
+
+    else if isPiece int lightKnightIndexes then
+        addPieceToTile <| Piece Knight Light Alive
+
+    else if isPiece int lightBishopIndexes then
+        addPieceToTile <| Piece Bishop Light Alive
+
+    else if int == lightKingIndex then
+        addPieceToTile <| Piece King Light Alive
+
+    else if int == lightQueenIndex then
+        addPieceToTile <| Piece Queen Light Alive
+
+    else if isPiece int darkPawnIndexes then
+        addPieceToTile <| Piece Pawn Dark Alive
+
+    else if isPiece int darkRookIndexes then
+        addPieceToTile <| Piece Rook Dark Alive
+
+    else if isPiece int darkKnightIndexes then
+        addPieceToTile <| Piece Knight Dark Alive
+
+    else if isPiece int darkBishopIndexes then
+        addPieceToTile <| Piece Bishop Dark Alive
+
+    else if int == darkKingIndex then
+        addPieceToTile <| Piece King Dark Alive
+
+    else if int == darkQueenIndex then
+        addPieceToTile <| Piece Queen Dark Alive
+        -- else if int == 32 then
+        --     addPieceToTile <| Piece Rook Light Alive
+        -- else if int == 33 then
+        --     addPieceToTile <| Piece Bishop Light Alive
+        -- else if int == 34 then
+        --     addPieceToTile <| Piece Queen Light Alive
+        -- else if int == 35 then
+        --     addPieceToTile <| Piece Pawn Light Alive
 
     else
-        div [ class <| tileClasses tile ] [ text <| String.fromInt tile.index ]
-
-
-
--- Create
-
-
-createBoard : Board
-createBoard =
-    List.range 1 100
-        |> List.map (\i -> ( i, createEmptyTile i ))
-        |> Dict.fromList
+        createEmptyTile int
 
 
 createEmptyTile : Int -> Tile
 createEmptyTile index =
-    Tile index (emptyTileStatus index)
+    Tile (emptyTileStatus index) Nothing
+
+
+addPieceToTile : Piece -> Tile
+addPieceToTile piece =
+    Tile WithinBounds <| Just piece
+
+
+isPiece : Int -> List Int -> Bool
+isPiece int intList =
+    List.member int intList
+
+
+lightPawnIndexes : List Int
+lightPawnIndexes =
+    List.range 22 29
+
+
+lightRookIndexes : List Int
+lightRookIndexes =
+    [ 12, 19 ]
+
+
+lightKnightIndexes : List Int
+lightKnightIndexes =
+    [ 13, 18 ]
+
+
+lightBishopIndexes : List Int
+lightBishopIndexes =
+    [ 14, 17 ]
+
+
+lightQueenIndex : Int
+lightQueenIndex =
+    15
+
+
+lightKingIndex : Int
+lightKingIndex =
+    16
+
+
+darkPawnIndexes : List Int
+darkPawnIndexes =
+    List.range 72 79
+
+
+darkRookIndexes : List Int
+darkRookIndexes =
+    [ 82, 89 ]
+
+
+darkKnightIndexes : List Int
+darkKnightIndexes =
+    [ 83, 88 ]
+
+
+darkBishopIndexes : List Int
+darkBishopIndexes =
+    [ 84, 87 ]
+
+
+darkQueenIndex : Int
+darkQueenIndex =
+    85
+
+
+darkKingIndex : Int
+darkKingIndex =
+    86
 
 
 emptyTileStatus : Int -> TileStatus
@@ -69,60 +160,6 @@ emptyTileStatus int =
         WithinBounds
 
 
-
--- Helpers
-
-
-isEven : Int -> Bool
-isEven int =
-    0 == modBy 2 int
-
-
 isIndexOutOfBounds : Int -> Bool
 isIndexOutOfBounds int =
     List.member int outOfBoundsList
-
-
-outOfBoundsList : List Int
-outOfBoundsList =
-    List.range 1 10
-        ++ List.range 91 100
-        ++ (List.map (\n -> n * 10 + 1) <| List.range 1 8)
-        ++ (List.map (\n -> n * 10) <| List.range 2 9)
-
-
-tileClasses : Tile -> String
-tileClasses tile =
-    case tile.status of
-        WithinBounds ->
-            lightOrDarkTile tile ++ "h3 w3 flex items-center justify-center"
-
-        OutOfBounds ->
-            "h3 w3 flex items-center justify-center bg-gray"
-
-
-lightOrDarkTile : Tile -> String
-lightOrDarkTile tile =
-    if isEven <| sumOfIndex tile then
-        "c-bg-light "
-
-    else
-        "c-bg-dark "
-
-
-sumOfIndex : Tile -> Int
-sumOfIndex tile =
-    tile.index
-        |> String.fromInt
-        |> String.split ""
-        |> List.map String.toInt
-        |> List.foldl (\maybeN acc -> Maybe.withDefault 0 maybeN + acc) 0
-
-
-chunk : Int -> List a -> List (List a) -> List (List a)
-chunk int list acc =
-    if List.length list <= int then
-        acc ++ [ list ]
-
-    else
-        chunk int (List.drop int list) acc ++ [ List.take int list ]
