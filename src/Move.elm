@@ -48,18 +48,12 @@ queenMoves tileIndex piece board =
 
 rookMoves : Int -> Piece -> Board -> List Int
 rookMoves tileIndex piece board =
-    addMovesToList tileIndex piece board 1 []
-        ++ addMovesToList tileIndex piece board -1 []
-        ++ addMovesToList tileIndex piece board 10 []
-        ++ addMovesToList tileIndex piece board -10 []
+    List.foldl (\i acc -> addMovesToList tileIndex piece board i acc) [] [ 1, -1, 10, -10 ]
 
 
 bishopMoves : Int -> Piece -> Board -> List Int
 bishopMoves tileIndex piece board =
-    addMovesToList tileIndex piece board 9 []
-        ++ addMovesToList tileIndex piece board -9 []
-        ++ addMovesToList tileIndex piece board 11 []
-        ++ addMovesToList tileIndex piece board -11 []
+    List.foldl (\i acc -> addMovesToList tileIndex piece board i acc) [] [ 9, -9, 11, -11 ]
 
 
 knightMoves : Int -> Piece -> Board -> List Int
