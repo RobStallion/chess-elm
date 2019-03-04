@@ -2,7 +2,7 @@
 
 Creating a chess game with elm.
 
-![image](https://user-images.githubusercontent.com/15571853/53729657-add0a400-3e6d-11e9-9416-09eb85d1b294.png)
+<img src="https://user-images.githubusercontent.com/15571853/53729657-add0a400-3e6d-11e9-9416-09eb85d1b294.png" width=400px />
 
 ## Run Locally
 
