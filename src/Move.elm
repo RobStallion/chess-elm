@@ -7,30 +7,29 @@ import Types exposing (..)
 
 getPossibleMoves : Int -> Board -> List Int
 getPossibleMoves tileIndex board =
-    let
-        piece =
-            board
-                |> getTilePiece tileIndex
-                |> Maybe.withDefault (Piece King Light Alive)
-    in
-    case piece.pieceType of
-        King ->
-            kingMoves tileIndex piece board
+    board
+        |> getTilePiece tileIndex
+        |> Maybe.withDefault (Piece King Light Alive)
+        |> (\piece ->
+                case piece.pieceType of
+                    King ->
+                        kingMoves tileIndex piece board
 
-        Queen ->
-            queenMoves tileIndex piece board
+                    Queen ->
+                        queenMoves tileIndex piece board
 
-        Rook ->
-            rookMoves tileIndex piece board
+                    Rook ->
+                        rookMoves tileIndex piece board
 
-        Bishop ->
-            bishopMoves tileIndex piece board
+                    Bishop ->
+                        bishopMoves tileIndex piece board
 
-        Knight ->
-            knightMoves tileIndex piece board
+                    Knight ->
+                        knightMoves tileIndex piece board
 
-        Pawn ->
-            pawnMoves tileIndex piece board
+                    Pawn ->
+                        pawnMoves tileIndex piece board
+           )
 
 
 kingMoves : Int -> Piece -> Board -> List Int
