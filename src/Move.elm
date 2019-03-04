@@ -155,40 +155,6 @@ pawnHomeIndexes piece =
             List.range 71 79
 
 
-
--- pawnMoves : Int -> Piece -> Board -> List Int
--- pawnMoves tileIndex piece board =
---     let
---         moves =
---             case piece.colour of
---                 Light ->
---                     [ 9, 10, 11, 20 ]
---
---                 Dark ->
---                     [ -9, -10, -11, -20 ]
---     in
---     moves
---         |> List.map (\i -> tileIndex + i)
---         |> checkTwoTileMove tileIndex piece
---         |> List.filter (\i -> not <| List.member i outOfBoundsList)
---
---
--- checkTwoTileMove : Int -> Piece -> List Int -> List Int
--- checkTwoTileMove tileIndex piece moves =
---     if isPawnOnStartingPosition tileIndex piece then
---         moves
---
---     else
---         List.filter (\i -> not <| i == tileIndex + 20) moves
---
---
--- isPawnOnStartingPosition : Int -> Piece -> Bool
--- isPawnOnStartingPosition tileIndex piece =
---     List.member tileIndex <| pawnHomeIndexes piece
---
---
-
-
 addMovesToList : Int -> Piece -> Board -> Int -> List Int -> List Int
 addMovesToList tileIndex piece board count acc =
     if doesTileContainOpposingPiece (tileIndex + count) piece board then
