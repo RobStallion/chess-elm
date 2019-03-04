@@ -36,8 +36,8 @@ kingMoves : Int -> Piece -> Board -> List Int
 kingMoves tileIndex piece board =
     [ 1, 9, 10, 11, -1, -9, -10, -11 ]
         |> List.map (\i -> tileIndex + i)
-        |> List.filter (\i -> not <| List.member i outOfBoundsList)
-        |> List.filter (\i -> not <| doesTileContainSameColourPiece i piece board)
+        |> filterOutOfBoundsMoves
+        |> filterMovesWhereTileContainsSameTeam piece board
 
 
 queenMoves : Int -> Piece -> Board -> List Int
@@ -59,9 +59,8 @@ knightMoves : Int -> Piece -> Board -> List Int
 knightMoves tileIndex piece board =
     [ 21, 19, 12, 8, -21, -19, -12, -8 ]
         |> List.map (\i -> tileIndex + i)
-        |> List.filter (\i -> not <| List.member i outOfBoundsList)
-        |> List.filter (\i -> i > 1 && i < 100)
-        |> List.filter (\i -> not <| doesTileContainSameColourPiece i piece board)
+        |> filterOutOfBoundsMoves
+        |> filterMovesWhereTileContainsSameTeam piece board
 
 
 pawnMoves : Int -> Piece -> Board -> List Int
@@ -209,3 +208,15 @@ sameTeam piece piece2 =
 
     else
         False
+
+
+filterOutOfBoundsMoves : List Int -> List Int
+filterOutOfBoundsMoves possMoves =
+    possMoves
+        |> List.filter (\i -> not <| List.member i outOfBoundsList)
+        |> List.filter (\i -> i > 1 && i < 100)
+
+
+filterMovesWhereTileContainsSameTeam : Piece -> Board -> List Int -> List Int
+filterMovesWhereTileContainsSameTeam piece board possMoves =
+    List.filter (\i -> not <| doesTileContainSameColourPiece i piece board) possMoves
