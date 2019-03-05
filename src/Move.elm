@@ -67,55 +67,43 @@ pawnMoves : Int -> Piece -> Board -> List Int
 pawnMoves tileIndex piece board =
     case piece.colour of
         Light ->
-            lightPawnMoves tileIndex piece board
+            getPawnMoves Light 10 20 9 11 tileIndex piece board
 
         Dark ->
-            darkPawnMoves tileIndex piece board
+            getPawnMoves Dark -10 -20 -9 -11 tileIndex piece board
 
 
-lightPawnMoves : Int -> Piece -> Board -> List Int
-lightPawnMoves tileIndex clickedPiece board =
+getPawnMoves : Colour -> Int -> Int -> Int -> Int -> Int -> Piece -> Board -> List Int
+getPawnMoves colour oneSq twoSq capL capR tileIndex clickedPiece board =
     let
         possMoves =
-            if isTileFree (tileIndex + 10) board && isTileFree (tileIndex + 20) board then
-                [ tileIndex + 10, tileIndex + 20 ]
+            if allowTwoSpaceMove tileIndex clickedPiece && isTileFree (tileIndex + oneSq) board && isTileFree (tileIndex + twoSq) board then
+                [ tileIndex + oneSq, tileIndex + twoSq ]
 
-            else if isTileFree (tileIndex + 10) board then
-                [ tileIndex + 10 ]
+            else if isTileFree (tileIndex + oneSq) board then
+                [ tileIndex + oneSq ]
 
             else
                 []
     in
     possMoves
-        |> checkTile tileIndex clickedPiece board 9
-        |> checkTile tileIndex clickedPiece board 11
+        |> checkTile tileIndex clickedPiece board capL
+        |> checkTile tileIndex clickedPiece board capR
 
 
-darkPawnMoves : Int -> Piece -> Board -> List Int
-darkPawnMoves tileIndex clickedPiece board =
-    let
-        possMoves =
-            if isTileFree (tileIndex - 10) board && isTileFree (tileIndex - 20) board then
-                [ tileIndex - 10, tileIndex - 20 ]
-
-            else if isTileFree (tileIndex - 10) board then
-                [ tileIndex - 10 ]
-
-            else
-                []
-    in
-    possMoves
-        |> checkTile tileIndex clickedPiece board -9
-        |> checkTile tileIndex clickedPiece board -11
+allowTwoSpaceMove : Int -> Piece -> Bool
+allowTwoSpaceMove tileIndex piece =
+    List.member tileIndex (pawnHomeIndexes piece)
 
 
-allowTwoSpaceMove : Int -> Piece -> Int -> List Int -> List Int
-allowTwoSpaceMove tileIndex clickedPiece count intList =
-    if List.member tileIndex (pawnHomeIndexes clickedPiece) then
-        (tileIndex + count) :: intList
+pawnHomeIndexes : Piece -> List Int
+pawnHomeIndexes piece =
+    case piece.colour of
+        Light ->
+            List.range 22 29
 
-    else
-        intList
+        Dark ->
+            List.range 71 79
 
 
 checkTile : Int -> Piece -> Board -> Int -> List Int -> List Int
@@ -130,16 +118,6 @@ checkTile tileIndex clickedPiece board count intList =
 
             else
                 (tileIndex + count) :: intList
-
-
-pawnHomeIndexes : Piece -> List Int
-pawnHomeIndexes piece =
-    case piece.colour of
-        Light ->
-            List.range 22 29
-
-        Dark ->
-            List.range 71 79
 
 
 addMovesToList : Int -> Piece -> Board -> Int -> List Int -> List Int
