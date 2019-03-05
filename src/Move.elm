@@ -7,43 +7,37 @@ import Types exposing (..)
 
 getPossibleMoves : Int -> Board -> List Int
 getPossibleMoves tileIndex board =
-    let
-        maybePiece =
-            board
-                |> getTile tileIndex
-                |> .piece
-    in
-    case maybePiece of
-        Nothing ->
-            []
+    board
+        |> getTilePiece tileIndex
+        |> Maybe.withDefault (Piece King Light Alive)
+        |> (\piece ->
+                case piece.pieceType of
+                    King ->
+                        kingMoves tileIndex piece board
 
-        Just piece ->
-            case piece.pieceType of
-                King ->
-                    kingMoves tileIndex piece board
+                    Queen ->
+                        queenMoves tileIndex piece board
 
-                Queen ->
-                    queenMoves tileIndex piece board
+                    Rook ->
+                        rookMoves tileIndex piece board
 
-                Rook ->
-                    rookMoves tileIndex piece board
+                    Bishop ->
+                        bishopMoves tileIndex piece board
 
-                Bishop ->
-                    bishopMoves tileIndex piece board
+                    Knight ->
+                        knightMoves tileIndex piece board
 
-                Knight ->
-                    knightMoves tileIndex piece board
-
-                Pawn ->
-                    pawnMoves tileIndex piece board
+                    Pawn ->
+                        pawnMoves tileIndex piece board
+           )
 
 
 kingMoves : Int -> Piece -> Board -> List Int
 kingMoves tileIndex piece board =
     [ 1, 9, 10, 11, -1, -9, -10, -11 ]
         |> List.map (\i -> tileIndex + i)
-        |> List.filter (\i -> not <| List.member i outOfBoundsList)
-        |> List.filter (\i -> not <| doesTileContainSameColourPiece i piece board)
+        |> filterOutOfBoundsMoves
+        |> filterMovesWhereTileContainsSameTeam piece board
 
 
 queenMoves : Int -> Piece -> Board -> List Int
@@ -53,82 +47,63 @@ queenMoves tileIndex piece board =
 
 rookMoves : Int -> Piece -> Board -> List Int
 rookMoves tileIndex piece board =
-    addMovesToList tileIndex piece board 1 []
-        ++ addMovesToList tileIndex piece board -1 []
-        ++ addMovesToList tileIndex piece board 10 []
-        ++ addMovesToList tileIndex piece board -10 []
+    List.foldl (\i acc -> addMovesToList tileIndex piece board i acc) [] [ 1, -1, 10, -10 ]
 
 
 bishopMoves : Int -> Piece -> Board -> List Int
 bishopMoves tileIndex piece board =
-    addMovesToList tileIndex piece board 9 []
-        ++ addMovesToList tileIndex piece board -9 []
-        ++ addMovesToList tileIndex piece board 11 []
-        ++ addMovesToList tileIndex piece board -11 []
+    List.foldl (\i acc -> addMovesToList tileIndex piece board i acc) [] [ 9, -9, 11, -11 ]
 
 
 knightMoves : Int -> Piece -> Board -> List Int
 knightMoves tileIndex piece board =
     [ 21, 19, 12, 8, -21, -19, -12, -8 ]
         |> List.map (\i -> tileIndex + i)
-        |> List.filter (\i -> not <| List.member i outOfBoundsList)
-        |> List.filter (\i -> i > 1 && i < 100)
-        |> List.filter (\i -> not <| doesTileContainSameColourPiece i piece board)
+        |> filterOutOfBoundsMoves
+        |> filterMovesWhereTileContainsSameTeam piece board
 
 
 pawnMoves : Int -> Piece -> Board -> List Int
 pawnMoves tileIndex piece board =
     case piece.colour of
         Light ->
-            lightPawnMoves tileIndex piece board
+            getPawnMoves Light 10 20 9 11 tileIndex piece board
 
         Dark ->
-            darkPawnMoves tileIndex piece board
+            getPawnMoves Dark -10 -20 -9 -11 tileIndex piece board
 
 
-lightPawnMoves : Int -> Piece -> Board -> List Int
-lightPawnMoves tileIndex clickedPiece board =
+getPawnMoves : Colour -> Int -> Int -> Int -> Int -> Int -> Piece -> Board -> List Int
+getPawnMoves colour oneSq twoSq capL capR tileIndex clickedPiece board =
     let
         possMoves =
-            if isTileFree (tileIndex + 10) board && isTileFree (tileIndex + 20) board then
-                [ tileIndex + 10, tileIndex + 20 ]
+            if allowTwoSpaceMove tileIndex clickedPiece && isTileFree (tileIndex + oneSq) board && isTileFree (tileIndex + twoSq) board then
+                [ tileIndex + oneSq, tileIndex + twoSq ]
 
-            else if isTileFree (tileIndex + 10) board then
-                [ tileIndex + 10 ]
+            else if isTileFree (tileIndex + oneSq) board then
+                [ tileIndex + oneSq ]
 
             else
                 []
     in
     possMoves
-        |> checkTile tileIndex clickedPiece board 9
-        |> checkTile tileIndex clickedPiece board 11
+        |> checkTile tileIndex clickedPiece board capL
+        |> checkTile tileIndex clickedPiece board capR
 
 
-darkPawnMoves : Int -> Piece -> Board -> List Int
-darkPawnMoves tileIndex clickedPiece board =
-    let
-        possMoves =
-            if isTileFree (tileIndex - 10) board && isTileFree (tileIndex - 20) board then
-                [ tileIndex - 10, tileIndex - 20 ]
-
-            else if isTileFree (tileIndex - 10) board then
-                [ tileIndex - 10 ]
-
-            else
-                []
-    in
-    possMoves
-        |> checkTile tileIndex clickedPiece board -9
-        |> checkTile tileIndex clickedPiece board -11
+allowTwoSpaceMove : Int -> Piece -> Bool
+allowTwoSpaceMove tileIndex piece =
+    List.member tileIndex (pawnHomeIndexes piece)
 
 
-allowTwoSpaceMove : Int -> Piece -> Int -> List Int -> List Int
-allowTwoSpaceMove tileIndex clickedPiece count intList =
-    if List.member tileIndex (pawnHomeIndexes clickedPiece) then
-        (tileIndex + count) :: intList
+pawnHomeIndexes : Piece -> List Int
+pawnHomeIndexes piece =
+    case piece.colour of
+        Light ->
+            List.range 22 29
 
-    else
-        intList
+        Dark ->
+            List.range 71 79
 
 
 checkTile : Int -> Piece -> Board -> Int -> List Int -> List Int
@@ -143,50 +118,6 @@ checkTile tileIndex clickedPiece board count intList =
 
             else
                 (tileIndex + count) :: intList
-
-
-pawnHomeIndexes : Piece -> List Int
-pawnHomeIndexes piece =
-    case piece.colour of
-        Light ->
-            List.range 22 29
-
-        Dark ->
-            List.range 71 79
-
-
-
--- pawnMoves : Int -> Piece -> Board -> List Int
--- pawnMoves tileIndex piece board =
---     let
---         moves =
---             case piece.colour of
---                 Light ->
---                     [ 9, 10, 11, 20 ]
---
---                 Dark ->
---                     [ -9, -10, -11, -20 ]
---     in
---     moves
---         |> List.map (\i -> tileIndex + i)
---         |> checkTwoTileMove tileIndex piece
---         |> List.filter (\i -> not <| List.member i outOfBoundsList)
---
---
--- checkTwoTileMove : Int -> Piece -> List Int -> List Int
--- checkTwoTileMove tileIndex piece moves =
---     if isPawnOnStartingPosition tileIndex piece then
---         moves
---
---     else
---         List.filter (\i -> not <| i == tileIndex + 20) moves
---
---
--- isPawnOnStartingPosition : Int -> Piece -> Bool
--- isPawnOnStartingPosition tileIndex piece =
---     List.member tileIndex <| pawnHomeIndexes piece
---
---
 
 
 addMovesToList : Int -> Piece -> Board -> Int -> List Int -> List Int
@@ -255,3 +186,15 @@ sameTeam piece piece2 =
 
     else
         False
+
+
+filterOutOfBoundsMoves : List Int -> List Int
+filterOutOfBoundsMoves possMoves =
+    possMoves
+        |> List.filter (\i -> not <| List.member i outOfBoundsList)
+        |> List.filter (\i -> i > 1 && i < 100)
+
+
+filterMovesWhereTileContainsSameTeam : Piece -> Board -> List Int -> List Int
+filterMovesWhereTileContainsSameTeam piece board possMoves =
+    List.filter (\i -> not <| doesTileContainSameColourPiece i piece board) possMoves
