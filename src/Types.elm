@@ -50,4 +50,5 @@ type PieceStatus
 
 
 type Msg
-    = CheckAvailableMoves Int
+    = CheckPossibleMoves Int
+    | RemovePossilbeMoves

@@ -3,7 +3,7 @@ module View exposing (view)
 import Dict
 import Html exposing (Html, div, img, text)
 import Html.Attributes exposing (class, src)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onMouseDown, onMouseUp)
 import Types exposing (..)
 
 
@@ -37,7 +37,12 @@ renderTile : ( Int, Tile ) -> Html Msg
 renderTile ( int, tile ) =
     case tile.piece of
         Just piece ->
-            div [ class <| tileClasses int tile, onClick <| CheckAvailableMoves int ] [ pieceImgTag piece ]
+            div
+                [ class <| tileClasses int tile
+                , onMouseDown <| CheckPossibleMoves int
+                , onMouseUp <| RemovePossilbeMoves
+                ]
+                [ pieceImgTag piece ]
 
         Nothing ->
             div [ class <| tileClasses int tile ] [ text <| String.fromInt int ]

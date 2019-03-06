@@ -14,12 +14,15 @@ init =
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        CheckAvailableMoves tileIndex ->
+        CheckPossibleMoves tileIndex ->
             let
                 possMoves =
                     getPossibleMoves tileIndex model.board
             in
             { model | board = updatePossibleMoves possMoves model.board }
+
+        RemovePossilbeMoves ->
+            init
 
 
 updatePossibleMoves : List Int -> Board -> Board
