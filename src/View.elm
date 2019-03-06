@@ -52,6 +52,9 @@ tileClasses int tile =
         OutOfBounds ->
             "h3 w3 flex items-center justify-center bg-gray"
 
+        PossilbeMove ->
+            lightOrDarkTile int ++ "h3 w3 flex items-center justify-center bg-green"
+
 
 lightOrDarkTile : Int -> String
 lightOrDarkTile int =
