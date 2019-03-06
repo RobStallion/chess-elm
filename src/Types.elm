@@ -20,6 +20,7 @@ type alias Tile =
 type TileStatus
     = WithinBounds
     | OutOfBounds
+    | PossilbeMove
 
 
 type alias Piece =
@@ -49,4 +50,5 @@ type PieceStatus
 
 
 type Msg
-    = CheckAvailableMoves Int
+    = CheckPossibleMoves Int
+    | RemovePossilbeMoves

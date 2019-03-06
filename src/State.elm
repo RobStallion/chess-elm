@@ -1,6 +1,7 @@
 module State exposing (init, update)
 
 import Board exposing (startingBoard)
+import Dict
 import Move exposing (getPossibleMoves)
 import Types exposing (..)
 
@@ -13,12 +14,22 @@ init =
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        CheckAvailableMoves tileIndex ->
+        CheckPossibleMoves tileIndex ->
             let
                 possMoves =
                     getPossibleMoves tileIndex model.board
-
-                _ =
-                    Debug.log "" possMoves
             in
-            model
+            { model | board = updatePossibleMoves possMoves model.board }
+
+        RemovePossilbeMoves ->
+            init
+
+
+updatePossibleMoves : List Int -> Board -> Board
+updatePossibleMoves possMoves board =
+    List.foldl updatePossibleMove board possMoves
+
+
+updatePossibleMove : Int -> Board -> Board
+updatePossibleMove index board =
+    Dict.update index (Maybe.map (\tile -> { tile | status = PossilbeMove })) board
