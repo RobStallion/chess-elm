@@ -6,19 +6,37 @@ Creating a chess game with elm.
 
 ## Run Locally
 
-First, make sure that you have [elm](https://guide.elm-lang.org/install.html) installed.
-
-Next, clone the repo...
+Start by cloning the repo...
 ```
-git clone git@github.com:RobStallion/chess-elm.git
+$ git clone git@github.com:RobStallion/chess-elm.git && cd chess-elm
 ```
 
-Finally, run the following command...
+### Dependencies
+
+Install elm. Installation instructions can be found [here](https://guide.elm-lang.org/install.html)
+
+### Run with elm reactor
+
+To get to project up and running just do the following steps...
 ```
-elm-live src/Main.elm --open --dir=public -- --output=public/js/elm.js --debug
+$ elm make src/Main.elm --output public/js/elm.js
+$ elm reactor
+Visit localhost:8000 in your browser and navigate to public/index.html
 ```
 
 And that's it 🎉🎉🎉🎉🎉
+
+### Run in dev mode
+
+If you want to run this application in a dev environment I would recommend
+installing [elm-live](https://github.com/wking-io/elm-live). Installation
+instructions can be found
+[here](https://github.com/wking-io/elm-live#installation)
+
+Once you have installed `elm-live`, do the following...
+```
+- elm-live src/Main.elm --open --dir=public -- --output=public/js/elm.js --debug
+```
 
 ## Why
 
