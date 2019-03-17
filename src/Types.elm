@@ -6,6 +6,8 @@ import Dict exposing (Dict)
 
 type alias Model =
     { board : Board
+    , boardWithoutPossibleMoves : Board
+    , beingDragged : Maybe ( Piece, Int )
     }
 
 

@@ -8,7 +8,10 @@ import Types exposing (..)
 
 init : Model
 init =
-    { board = startingBoard }
+    { board = startingBoard
+    , boardWithoutPossibleMoves = startingBoard
+    , beingDragged = Nothing
+    }
 
 
 update : Msg -> Model -> Model
@@ -22,7 +25,52 @@ update msg model =
             { model | board = updatePossibleMoves possMoves model.board }
 
         RemovePossilbeMoves ->
-            init
+            { model | board = model.boardWithoutPossibleMoves }
+
+        Drag ( piece, index ) ->
+            { model | beingDragged = Just ( piece, index ) }
+
+        DragEnd ->
+            { model | beingDragged = Nothing }
+
+        DragOver ->
+            model
+
+        Drop targetIndex ->
+            let
+                boardWithoutPossibleMoves =
+                    model.boardWithoutPossibleMoves
+
+                updatedBoard =
+                    case model.beingDragged of
+                        Just ( piece, currentIndex ) ->
+                            boardWithoutPossibleMoves
+                                |> moveToNewTile targetIndex piece
+                                |> removeFromPreviousTile currentIndex piece
+
+                        Nothing ->
+                            model.board
+            in
+            case model.beingDragged of
+                Nothing ->
+                    model
+
+                Just ( piece, currentIndex ) ->
+                    { model
+                        | beingDragged = Nothing
+                        , board = updatedBoard
+                        , boardWithoutPossibleMoves = model.board
+                    }
+
+
+moveToNewTile : Int -> Piece -> Board -> Board
+moveToNewTile index piece board =
+    Dict.update index (Maybe.map (\tile -> { tile | status = WithinBounds, piece = Just piece })) board
+
+
+removeFromPreviousTile : Int -> Piece -> Board -> Board
+removeFromPreviousTile index piece board =
+    Dict.update index (Maybe.map (\tile -> { tile | status = WithinBounds, piece = Nothing })) board
 
 
 updatePossibleMoves : List Int -> Board -> Board
