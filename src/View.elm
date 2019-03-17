@@ -2,8 +2,9 @@ module View exposing (view)
 
 import Dict
 import Html exposing (Html, div, img, text)
-import Html.Attributes exposing (class, src)
-import Html.Events exposing (onClick, onMouseDown, onMouseUp)
+import Html.Attributes exposing (class, draggable, src)
+import Html.Events exposing (on, onClick, onMouseDown, onMouseUp, preventDefaultOn)
+import Json.Decode exposing (succeed)
 import Types exposing (..)
 
 
@@ -41,21 +42,44 @@ renderTile ( int, tile ) =
                 [ class <| tileClasses ++ lightOrDarkTile int
                 , onMouseDown <| CheckPossibleMoves int
                 , onMouseUp RemovePossilbeMoves
+                , draggable "true"
+                , onDragStart <| Drag ( piece, int )
+                , onDragEnd DragEnd
                 ]
                 [ pieceImgTag piece ]
 
         Nothing ->
             case tile.status of
                 WithinBounds ->
-                    div [ class <| tileClasses ++ lightOrDarkTile int ] []
+                    div [ class <| tileClasses ++ lightOrDarkTile int ] [ text <| String.fromInt int ]
 
                 OutOfBounds ->
-                    div [ class <| tileClasses ++ "bg-gray" ] []
+                    div [ class <| tileClasses ++ "bg-gray" ] [ text <| String.fromInt int ]
 
                 PossilbeMove ->
-                    div [ class <| tileClasses ++ lightOrDarkTile int ]
+                    div
+                        [ class <| tileClasses ++ lightOrDarkTile int
+                        , onDragOver DragOver
+                        , onDrop <| Drop int
+                        ]
                         [ div [ class "bg-green w1 h1 br4" ] []
                         ]
+
+
+onDragStart msg =
+    on "dragstart" <| succeed msg
+
+
+onDragEnd msg =
+    on "dragend" <| succeed msg
+
+
+onDragOver msg =
+    preventDefaultOn "dragover" <| succeed ( msg, True )
+
+
+onDrop msg =
+    preventDefaultOn "drop" <| succeed ( msg, True )
 
 
 tileClasses : String

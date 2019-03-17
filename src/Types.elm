@@ -6,6 +6,8 @@ import Dict exposing (Dict)
 
 type alias Model =
     { board : Board
+    , boardWithoutPossibleMoves : Board
+    , beingDragged : Maybe ( Piece, Int )
     }
 
 
@@ -52,3 +54,7 @@ type PieceStatus
 type Msg
     = CheckPossibleMoves Int
     | RemovePossilbeMoves
+    | Drag ( Piece, Int )
+    | DragEnd
+    | DragOver
+    | Drop Int
