@@ -59,7 +59,7 @@ update msg model =
                     { model
                         | beingDragged = Nothing
                         , board = updatedBoard
-                        , boardWithoutPossibleMoves = model.board
+                        , boardWithoutPossibleMoves = updatedBoard
                     }
 
 
