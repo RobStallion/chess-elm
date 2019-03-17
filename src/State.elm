@@ -20,9 +20,9 @@ update msg model =
         CheckPossibleMoves tileIndex ->
             let
                 possMoves =
-                    getPossibleMoves tileIndex model.board
+                    getPossibleMoves tileIndex model.boardWithoutPossibleMoves
             in
-            { model | board = updatePossibleMoves possMoves model.board }
+            { model | board = updatePossibleMoves possMoves model.boardWithoutPossibleMoves }
 
         RemovePossilbeMoves ->
             { model | board = model.boardWithoutPossibleMoves }
