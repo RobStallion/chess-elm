@@ -38,36 +38,38 @@ renderTile ( int, tile ) =
     case tile.piece of
         Just piece ->
             div
-                [ class <| tileClasses int tile
+                [ class <| tileClasses ++ lightOrDarkTile int
                 , onMouseDown <| CheckPossibleMoves int
-                , onMouseUp <| RemovePossilbeMoves
+                , onMouseUp RemovePossilbeMoves
                 ]
                 [ pieceImgTag piece ]
 
         Nothing ->
-            div [ class <| tileClasses int tile ] [ text <| String.fromInt int ]
+            case tile.status of
+                WithinBounds ->
+                    div [ class <| tileClasses ++ lightOrDarkTile int ] []
+
+                OutOfBounds ->
+                    div [ class <| tileClasses ++ "bg-gray" ] []
+
+                PossilbeMove ->
+                    div [ class <| tileClasses ++ lightOrDarkTile int ]
+                        [ div [ class "bg-green w1 h1 br4" ] []
+                        ]
 
 
-tileClasses : Int -> Tile -> String
-tileClasses int tile =
-    case tile.status of
-        WithinBounds ->
-            lightOrDarkTile int ++ "h3 w3 flex items-center justify-center"
-
-        OutOfBounds ->
-            "h3 w3 flex items-center justify-center bg-gray"
-
-        PossilbeMove ->
-            lightOrDarkTile int ++ "h3 w3 flex items-center justify-center bg-green"
+tileClasses : String
+tileClasses =
+    "h3 w3 flex items-center justify-center "
 
 
 lightOrDarkTile : Int -> String
 lightOrDarkTile int =
     if isEven <| sumOfIndex int then
-        "c-bg-light "
+        "c-bg-light"
 
     else
-        "c-bg-dark "
+        "c-bg-dark"
 
 
 sumOfIndex : Int -> Int
