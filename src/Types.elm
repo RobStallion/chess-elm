@@ -52,3 +52,7 @@ type PieceStatus
 type Msg
     = CheckPossibleMoves Int
     | RemovePossilbeMoves
+    | Drag ( Piece, Int )
+    | DragEnd
+    | DragOver
+    | Drop Int
