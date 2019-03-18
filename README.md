@@ -35,7 +35,7 @@ instructions can be found
 
 Once you have installed `elm-live`, do the following...
 ```
-- elm-live src/Main.elm --open --dir=public -- --output=public/js/elm.js --debug
+$ elm-live src/Main.elm --open --dir=public -- --output=public/js/elm.js --debug
 ```
 
 ## Why
