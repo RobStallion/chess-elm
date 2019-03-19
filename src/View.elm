@@ -155,3 +155,23 @@ chunk int acc list =
 isEven : Int -> Bool
 isEven int =
     0 == modBy 2 int
+
+
+onDragStart : Msg -> Html.Attribute Msg
+onDragStart msg =
+    on "dragstart" <| succeed msg
+
+
+onDragEnd : Msg -> Html.Attribute Msg
+onDragEnd msg =
+    on "dragend" <| succeed msg
+
+
+onDragOver : Msg -> Html.Attribute Msg
+onDragOver msg =
+    preventDefaultOn "dragover" <| succeed ( msg, True )
+
+
+onDrop : Msg -> Html.Attribute Msg
+onDrop msg =
+    preventDefaultOn "drop" <| succeed ( msg, True )
