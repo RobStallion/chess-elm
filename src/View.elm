@@ -12,41 +12,41 @@ view : Model -> Html Msg
 view model =
     div []
         [ div [ class "mt4 flex justify-center" ]
-            [ renderBoard model.board
+            [ renderBoard model
             ]
         ]
 
 
-renderBoard : Board -> Html Msg
-renderBoard board =
-    board
+renderBoard : Model -> Html Msg
+renderBoard model =
+    model.board
         |> Dict.toList
         |> chunk 10 []
         |> List.reverse
-        |> List.map renderRow
+        |> List.map (\row -> renderRow model row)
         |> div []
 
 
-renderRow : List ( Int, Tile ) -> Html Msg
-renderRow tileIntList =
+renderRow : Model -> List ( Int, Tile ) -> Html Msg
+renderRow model tileIntList =
     tileIntList
-        |> List.map renderTile
+        |> List.map (\tile -> renderTile model tile)
         |> div [ class "flex" ]
 
 
-renderTile : ( Int, Tile ) -> Html Msg
-renderTile ( int, tile ) =
+renderTile : Model -> ( Int, Tile ) -> Html Msg
+renderTile model ( int, tile ) =
     case tile.piece of
         Just piece ->
-            div
-                [ class <| tileClasses ++ lightOrDarkTile int
-                , onMouseDown <| CheckPossibleMoves int
-                , onMouseUp RemovePossilbeMoves
-                , draggable "true"
-                , onDragStart <| Drag ( piece, int )
-                , onDragEnd DragEnd
-                ]
-                [ pieceImgTag piece ]
+            if piece.team == model.turn then
+                div
+                    ([ class <| tileClasses ++ lightOrDarkTile int ]
+                        ++ movePieceEventListeners piece int
+                    )
+                    [ pieceImgTag piece ]
+
+            else
+                div [ class <| tileClasses ++ lightOrDarkTile int ] [ pieceImgTag piece ]
 
         Nothing ->
             case tile.status of
@@ -66,20 +66,14 @@ renderTile ( int, tile ) =
                         ]
 
 
-onDragStart msg =
-    on "dragstart" <| succeed msg
-
-
-onDragEnd msg =
-    on "dragend" <| succeed msg
-
-
-onDragOver msg =
-    preventDefaultOn "dragover" <| succeed ( msg, True )
-
-
-onDrop msg =
-    preventDefaultOn "drop" <| succeed ( msg, True )
+movePieceEventListeners : Piece -> Int -> List (Html.Attribute Msg)
+movePieceEventListeners piece int =
+    [ onMouseDown <| CheckPossibleMoves int
+    , onMouseUp RemovePossilbeMoves
+    , draggable "true"
+    , onDragStart <| Drag ( piece, int )
+    , onDragEnd DragEnd
+    ]
 
 
 tileClasses : String
@@ -114,7 +108,7 @@ pieceImgTag piece =
 
 pieceImgStr : Piece -> String
 pieceImgStr piece =
-    "images/" ++ colourToText piece.colour ++ pieceToText piece.pieceType ++ ".svg"
+    "images/" ++ colourToText piece.team ++ pieceToText piece.pieceType ++ ".svg"
 
 
 pieceToText : PieceType -> String
@@ -139,13 +133,13 @@ pieceToText piece =
             "p"
 
 
-colourToText : Colour -> String
-colourToText colour =
-    case colour of
-        Light ->
+colourToText : Team -> String
+colourToText team =
+    case team of
+        White ->
             "l"
 
-        Dark ->
+        Black ->
             "d"
 
 
@@ -161,3 +155,23 @@ chunk int acc list =
 isEven : Int -> Bool
 isEven int =
     0 == modBy 2 int
+
+
+onDragStart : Msg -> Html.Attribute Msg
+onDragStart msg =
+    on "dragstart" <| succeed msg
+
+
+onDragEnd : Msg -> Html.Attribute Msg
+onDragEnd msg =
+    on "dragend" <| succeed msg
+
+
+onDragOver : Msg -> Html.Attribute Msg
+onDragOver msg =
+    preventDefaultOn "dragover" <| succeed ( msg, True )
+
+
+onDrop : Msg -> Html.Attribute Msg
+onDrop msg =
+    preventDefaultOn "drop" <| succeed ( msg, True )

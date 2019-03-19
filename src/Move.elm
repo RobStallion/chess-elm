@@ -9,7 +9,7 @@ getPossibleMoves : Int -> Board -> List Int
 getPossibleMoves tileIndex board =
     board
         |> getTilePiece tileIndex
-        |> Maybe.withDefault (Piece King Light Alive)
+        |> Maybe.withDefault (Piece King White Alive)
         |> (\piece ->
                 case piece.pieceType of
                     King ->
@@ -65,11 +65,11 @@ knightMoves tileIndex piece board =
 
 pawnMoves : Int -> Piece -> Board -> List Int
 pawnMoves tileIndex piece board =
-    case piece.colour of
-        Light ->
+    case piece.team of
+        White ->
             getPawnMoves Light 10 20 9 11 tileIndex piece board
 
-        Dark ->
+        Black ->
             getPawnMoves Dark -10 -20 -9 -11 tileIndex piece board
 
 
@@ -98,11 +98,11 @@ allowTwoSpaceMove tileIndex piece =
 
 pawnHomeIndexes : Piece -> List Int
 pawnHomeIndexes piece =
-    case piece.colour of
-        Light ->
+    case piece.team of
+        White ->
             List.range 22 29
 
-        Dark ->
+        Black ->
             List.range 71 79
 
 
@@ -181,7 +181,7 @@ doesTileContainSameColourPiece tileIndex clickedPiece board =
 
 sameTeam : Piece -> Piece -> Bool
 sameTeam piece piece2 =
-    if piece.colour == piece2.colour then
+    if piece.team == piece2.team then
         True
 
     else
