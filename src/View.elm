@@ -114,7 +114,7 @@ pieceImgTag piece =
 
 pieceImgStr : Piece -> String
 pieceImgStr piece =
-    "images/" ++ colourToText piece.colour ++ pieceToText piece.pieceType ++ ".svg"
+    "images/" ++ colourToText piece.team ++ pieceToText piece.pieceType ++ ".svg"
 
 
 pieceToText : PieceType -> String
@@ -139,13 +139,13 @@ pieceToText piece =
             "p"
 
 
-colourToText : Colour -> String
-colourToText colour =
-    case colour of
-        Light ->
+colourToText : Team -> String
+colourToText team =
+    case team of
+        White ->
             "l"
 
-        Dark ->
+        Black ->
             "d"
 
 

@@ -11,6 +11,7 @@ init =
     { board = startingBoard
     , boardWithoutPossibleMoves = startingBoard
     , beingDragged = Nothing
+    , turn = White
     }
 
 
