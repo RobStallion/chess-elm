@@ -61,7 +61,18 @@ update msg model =
                         | beingDragged = Nothing
                         , board = updatedBoard
                         , boardWithoutPossibleMoves = updatedBoard
+                        , turn = oppositeTeam piece.team
                     }
+
+
+oppositeTeam : Team -> Team
+oppositeTeam team =
+    case team of
+        Black ->
+            White
+
+        White ->
+            Black
 
 
 moveToNewTile : Int -> Piece -> Board -> Board
