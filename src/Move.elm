@@ -67,7 +67,7 @@ pawnMoves : Int -> Piece -> Board -> List Int
 pawnMoves tileIndex piece board =
     case piece.team of
         White ->
-            getPawnMoves Light 10 20 9 11 tileIndex piece board
+            checkEnPassant tileIndex piece board :: getPawnMoves Light 10 20 9 11 tileIndex piece board
 
         Black ->
             getPawnMoves Dark -10 -20 -9 -11 tileIndex piece board
@@ -118,6 +118,22 @@ checkTile tileIndex clickedPiece board count intList =
 
             else
                 (tileIndex + count) :: intList
+
+
+checkEnPassant : Int -> Piece -> Board -> Int
+checkEnPassant tileIndex clickedPiece board =
+    let
+        neighbouringTilePieces =
+            [ 1, -1 ]
+                |> List.map (\i -> getTilePiece (tileIndex + i) board)
+                |> List.filter (\piece -> piece /= Nothing)
+    in
+    case clickedPiece.team of
+        Black ->
+            0
+
+        White ->
+            0
 
 
 addMovesToList : Int -> Piece -> Board -> Int -> List Int -> List Int
