@@ -36,27 +36,37 @@ renderRow model tileIntList =
 
 renderTile : Model -> ( Int, Tile ) -> Html Msg
 renderTile model ( int, tile ) =
-    case tile.piece of
-        Just piece ->
-            if piece.team == model.turn then
-                div
-                    ([ class <| tileClasses ++ lightOrDarkTile int ]
-                        ++ movePieceEventListeners piece int
-                    )
-                    [ pieceImgTag piece ]
+    case tile.status of
+        WithinBounds ->
+            case tile.piece of
+                Just piece ->
+                    if piece.team == model.turn then
+                        div
+                            [ class <| tileClasses ++ lightOrDarkTile int ]
+                            [ pieceImgTag piece <| movePieceEventListeners piece int ]
 
-            else
-                div [ class <| tileClasses ++ lightOrDarkTile int ] [ pieceImgTag piece ]
+                    else
+                        div [ class <| tileClasses ++ lightOrDarkTile int ] [ pieceImgTag piece [] ]
 
-        Nothing ->
-            case tile.status of
-                WithinBounds ->
+                Nothing ->
                     div [ class <| tileClasses ++ lightOrDarkTile int ] [ text <| String.fromInt int ]
 
-                OutOfBounds ->
-                    div [ class <| tileClasses ++ "bg-gray" ] [ text <| String.fromInt int ]
+        OutOfBounds ->
+            div [ class <| tileClasses ++ "bg-gray" ] [ text <| String.fromInt int ]
 
-                PossilbeMove ->
+        PossilbeMove ->
+            case tile.piece of
+                Just piece ->
+                    div
+                        [ class <| tileClasses ++ lightOrDarkTile int
+                        , onDragOver DragOver
+                        , onDrop <| Drop int
+                        ]
+                        [ pieceImgTag piece []
+                        , div [ class "bg-red w1 h1 br4 absolute" ] []
+                        ]
+
+                Nothing ->
                     div
                         [ class <| tileClasses ++ lightOrDarkTile int
                         , onDragOver DragOver
@@ -99,11 +109,9 @@ sumOfIndex int =
         |> List.foldl (\maybeN acc -> Maybe.withDefault 0 maybeN + acc) 0
 
 
-pieceImgTag : Piece -> Html Msg
-pieceImgTag piece =
-    div [ class "h3 w3 flex items-center justify-center" ]
-        [ img [ src <| pieceImgStr piece, class "w2-5" ] []
-        ]
+pieceImgTag : Piece -> List (Html.Attribute Msg) -> Html Msg
+pieceImgTag piece attributes =
+    img ([ src <| pieceImgStr piece, class "w2-5" ] ++ attributes) []
 
 
 pieceImgStr : Piece -> String
