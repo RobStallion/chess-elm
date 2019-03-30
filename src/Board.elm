@@ -29,7 +29,7 @@ getTile tileIndex board =
 createTiles : Int -> Tile
 createTiles int =
     if isPiece int lightPawnIndexes then
-        addPieceToTile <| Piece Pawn White Alive
+        addPieceToTile <| Piece (Pawn { enPassent = False }) White Alive
 
     else if isPiece int lightRookIndexes then
         addPieceToTile <| Piece Rook White Alive
@@ -47,7 +47,7 @@ createTiles int =
         addPieceToTile <| Piece Queen White Alive
 
     else if isPiece int darkPawnIndexes then
-        addPieceToTile <| Piece Pawn Black Alive
+        addPieceToTile <| Piece (Pawn { enPassent = False }) Black Alive
 
     else if isPiece int darkRookIndexes then
         addPieceToTile <| Piece Rook Black Alive

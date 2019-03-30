@@ -137,7 +137,7 @@ pieceToText piece =
         Knight ->
             "n"
 
-        Pawn ->
+        Pawn _ ->
             "p"
 
 

@@ -27,7 +27,7 @@ getPossibleMoves tileIndex board =
                     Knight ->
                         knightMoves tileIndex piece board
 
-                    Pawn ->
+                    Pawn _ ->
                         pawnMoves tileIndex piece board
            )
 

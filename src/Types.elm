@@ -39,7 +39,7 @@ type PieceType
     | Rook
     | Bishop
     | Knight
-    | Pawn
+    | Pawn PawnState
 
 
 type Team
@@ -64,3 +64,7 @@ type Msg
     | DragEnd
     | DragOver
     | Drop Int
+
+
+type alias PawnState =
+    { enPassent : Bool }
