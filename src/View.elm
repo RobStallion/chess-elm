@@ -40,7 +40,7 @@ renderTile model ( int, tile ) =
         WithinBounds ->
             case tile.piece of
                 Just piece ->
-                    if piece.team == model.turn then
+                    if White == model.turn then
                         div
                             [ class <| tileClasses ++ lightOrDarkTile int ]
                             [ pieceImgTag piece <| movePieceEventListeners piece int ]
@@ -116,12 +116,21 @@ pieceImgTag piece attributes =
 
 pieceImgStr : Piece -> String
 pieceImgStr piece =
+    case piece.pieceState of
+        -- KingState kingStateType ->
+        --
+        --
+        -- PieceState pieceStateType ->
+        --
+        --
+        -- PawnState pawnStateType ->
+        --
     "images/" ++ colourToText piece.team ++ pieceToText piece.pieceType ++ ".svg"
 
 
-pieceToText : PieceType -> String
+pieceToText : Piece -> String
 pieceToText piece =
-    case piece of
+    case piece.pieceType of
         King ->
             "k"
 
@@ -135,9 +144,9 @@ pieceToText piece =
             "b"
 
         Knight ->
-            "n"
+            "k"
 
-        Pawn _ ->
+        Pawn ->
             "p"
 
 

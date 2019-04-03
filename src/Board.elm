@@ -29,40 +29,40 @@ getTile tileIndex board =
 createTiles : Int -> Tile
 createTiles int =
     if isPiece int lightPawnIndexes then
-        addPieceToTile <| Piece (Pawn { enPassent = False }) White Alive
+        addPieceToTile <| Piece Pawn <| PawnState <| PawnStateType White True False False
 
     else if isPiece int lightRookIndexes then
-        addPieceToTile <| Piece Rook White Alive
+        addPieceToTile <| Piece Rook <| PieceState <| PieceStateType White
 
     else if isPiece int lightKnightIndexes then
-        addPieceToTile <| Piece Knight White Alive
+        addPieceToTile <| Piece Knight <| PieceState <| PieceStateType White
 
     else if isPiece int lightBishopIndexes then
-        addPieceToTile <| Piece Bishop White Alive
+        addPieceToTile <| Piece Bishop <| PieceState <| PieceStateType White
 
     else if int == lightKingIndex then
-        addPieceToTile <| Piece King White Alive
+        addPieceToTile <| Piece King <| KingState <| KingStateType White False False
 
     else if int == lightQueenIndex then
-        addPieceToTile <| Piece Queen White Alive
+        addPieceToTile <| Piece Queen <| PieceState <| PieceStateType White
 
     else if isPiece int darkPawnIndexes then
-        addPieceToTile <| Piece (Pawn { enPassent = False }) Black Alive
+        addPieceToTile <| Piece Pawn <| PawnState <| PawnStateType Black True False False
 
     else if isPiece int darkRookIndexes then
-        addPieceToTile <| Piece Rook Black Alive
+        addPieceToTile <| Piece Rook <| PieceState <| PieceStateType Black
 
     else if isPiece int darkKnightIndexes then
-        addPieceToTile <| Piece Knight Black Alive
+        addPieceToTile <| Piece Knight <| PieceState <| PieceStateType Black
 
     else if isPiece int darkBishopIndexes then
-        addPieceToTile <| Piece Bishop Black Alive
+        addPieceToTile <| Piece Bishop <| PieceState <| PieceStateType Black
 
     else if int == darkKingIndex then
-        addPieceToTile <| Piece King Black Alive
+        addPieceToTile <| Piece King <| KingState <| KingStateType White False False
 
     else if int == darkQueenIndex then
-        addPieceToTile <| Piece Queen Black Alive
+        addPieceToTile <| Piece Queen <| PieceState <| PieceStateType Black
 
     else
         createEmptyTile int

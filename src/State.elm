@@ -77,7 +77,12 @@ oppositeTeam team =
 
 moveToNewTile : Int -> Piece -> Board -> Board
 moveToNewTile index piece board =
-    Dict.update index (Maybe.map (\tile -> { tile | status = WithinBounds, piece = Just piece })) board
+    case piece.pieceType of
+        Pawn pawnState ->
+            Dict.update index (Maybe.map (\tile -> { tile | status = WithinBounds, piece = Just piece })) board
+
+        _ ->
+            Dict.update index (Maybe.map (\tile -> { tile | status = WithinBounds, piece = Just piece })) board
 
 
 removeFromPreviousTile : Int -> Piece -> Board -> Board

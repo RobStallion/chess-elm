@@ -1,4 +1,4 @@
-module Types exposing (Board, Colour(..), Model, Msg(..), Piece, PieceStatus(..), PieceType(..), Team(..), Tile, TileStatus(..))
+module Types exposing (Board, Colour(..), King, KingState, Knight, Model, Msg(..), Pawn, PawnState, Piece(..), PieceState, Queen, Rook, Team(..), Tile, TileStatus(..))
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -26,20 +26,32 @@ type TileStatus
     | PossilbeMove
 
 
-type alias Piece =
-    { pieceType : PieceType
-    , team : Team
-    , status : PieceStatus
+type Piece
+    = King KingState
+    | Queen PieceState
+    | Rook PieceState
+    | Knight PieceState
+    | Bishop PieceState
+    | Pawn PawnState
+
+
+type alias KingState =
+    { team : Team
+    , check : Bool
+    , doubleCheck : Bool
     }
 
 
-type PieceType
-    = King
-    | Queen
-    | Rook
-    | Bishop
-    | Knight
-    | Pawn PawnState
+type alias PieceState =
+    { team : Team }
+
+
+type alias PawnState =
+    { team : Team
+    , onHomeTile : Bool
+    , movedTwoTiles : Bool
+    , capableOfEnPassentCap : Bool
+    }
 
 
 type Team
@@ -52,11 +64,6 @@ type Colour
     | Dark
 
 
-type PieceStatus
-    = Alive
-    | Captured
-
-
 type Msg
     = CheckPossibleMoves Int
     | RemovePossilbeMoves
@@ -64,7 +71,3 @@ type Msg
     | DragEnd
     | DragOver
     | Drop Int
-
-
-type alias PawnState =
-    { enPassent : Bool }

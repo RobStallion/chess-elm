@@ -9,7 +9,7 @@ getPossibleMoves : Int -> Board -> List Int
 getPossibleMoves tileIndex board =
     board
         |> getTilePiece tileIndex
-        |> Maybe.withDefault (Piece King White Alive)
+        |> Maybe.withDefault (Piece King White)
         |> (\piece ->
                 case piece.pieceType of
                     King ->
@@ -27,8 +27,8 @@ getPossibleMoves tileIndex board =
                     Knight ->
                         knightMoves tileIndex piece board
 
-                    Pawn _ ->
-                        pawnMoves tileIndex piece board
+                    Pawn pawnState ->
+                        pawnMoves tileIndex piece pawnState board
            )
 
 
@@ -63,21 +63,22 @@ knightMoves tileIndex piece board =
         |> filterMovesWhereTileContainsSameTeam piece board
 
 
-pawnMoves : Int -> Piece -> Board -> List Int
-pawnMoves tileIndex piece board =
+pawnMoves : Int -> Piece -> PawnState -> Board -> List Int
+pawnMoves tileIndex piece pawnState board =
     case piece.team of
         White ->
-            checkEnPassant tileIndex piece board :: getPawnMoves Light 10 20 9 11 tileIndex piece board
+            -- checkEnPassant tileIndex piece board ::
+            getPawnMoves pawnState Light 10 20 9 11 tileIndex piece board
 
         Black ->
-            getPawnMoves Dark -10 -20 -9 -11 tileIndex piece board
+            getPawnMoves pawnState Dark -10 -20 -9 -11 tileIndex piece board
 
 
-getPawnMoves : Colour -> Int -> Int -> Int -> Int -> Int -> Piece -> Board -> List Int
-getPawnMoves colour oneSq twoSq capL capR tileIndex clickedPiece board =
+getPawnMoves : PawnState -> Colour -> Int -> Int -> Int -> Int -> Int -> Piece -> Board -> List Int
+getPawnMoves pawnState colour oneSq twoSq capL capR tileIndex clickedPiece board =
     let
         possMoves =
-            if allowTwoSpaceMove tileIndex clickedPiece && isTileFree (tileIndex + oneSq) board && isTileFree (tileIndex + twoSq) board then
+            if pawnState.onHomeTile && isTileFree (tileIndex + oneSq) board && isTileFree (tileIndex + twoSq) board then
                 [ tileIndex + oneSq, tileIndex + twoSq ]
 
             else if isTileFree (tileIndex + oneSq) board then
