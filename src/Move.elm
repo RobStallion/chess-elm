@@ -9,7 +9,7 @@ getPossibleMoves : Int -> Board -> List Int
 getPossibleMoves tileIndex board =
     board
         |> getTilePiece tileIndex
-        |> Maybe.withDefault (Piece King White Alive)
+        |> Maybe.withDefault (Piece King White)
         |> (\piece ->
                 case piece.pieceType of
                     King ->

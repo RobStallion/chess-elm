@@ -29,40 +29,40 @@ getTile tileIndex board =
 createTiles : Int -> Tile
 createTiles int =
     if isPiece int lightPawnIndexes then
-        addPieceToTile <| Piece Pawn White Alive
+        addPieceToTile <| Piece Pawn White
 
     else if isPiece int lightRookIndexes then
-        addPieceToTile <| Piece Rook White Alive
+        addPieceToTile <| Piece Rook White
 
     else if isPiece int lightKnightIndexes then
-        addPieceToTile <| Piece Knight White Alive
+        addPieceToTile <| Piece Knight White
 
     else if isPiece int lightBishopIndexes then
-        addPieceToTile <| Piece Bishop White Alive
+        addPieceToTile <| Piece Bishop White
 
     else if int == lightKingIndex then
-        addPieceToTile <| Piece King White Alive
+        addPieceToTile <| Piece King White
 
     else if int == lightQueenIndex then
-        addPieceToTile <| Piece Queen White Alive
+        addPieceToTile <| Piece Queen White
 
     else if isPiece int darkPawnIndexes then
-        addPieceToTile <| Piece Pawn Black Alive
+        addPieceToTile <| Piece Pawn Black
 
     else if isPiece int darkRookIndexes then
-        addPieceToTile <| Piece Rook Black Alive
+        addPieceToTile <| Piece Rook Black
 
     else if isPiece int darkKnightIndexes then
-        addPieceToTile <| Piece Knight Black Alive
+        addPieceToTile <| Piece Knight Black
 
     else if isPiece int darkBishopIndexes then
-        addPieceToTile <| Piece Bishop Black Alive
+        addPieceToTile <| Piece Bishop Black
 
     else if int == darkKingIndex then
-        addPieceToTile <| Piece King Black Alive
+        addPieceToTile <| Piece King Black
 
     else if int == darkQueenIndex then
-        addPieceToTile <| Piece Queen Black Alive
+        addPieceToTile <| Piece Queen Black
 
     else
         createEmptyTile int

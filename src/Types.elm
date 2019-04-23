@@ -1,4 +1,4 @@
-module Types exposing (Board, Colour(..), Model, Msg(..), Piece, PieceStatus(..), PieceType(..), Team(..), Tile, TileStatus(..))
+module Types exposing (Board, Colour(..), Model, Msg(..), Piece, PieceType(..), Team(..), Tile, TileStatus(..))
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -29,7 +29,6 @@ type TileStatus
 type alias Piece =
     { pieceType : PieceType
     , team : Team
-    , status : PieceStatus
     }
 
 
@@ -50,11 +49,6 @@ type Team
 type Colour
     = Light
     | Dark
-
-
-type PieceStatus
-    = Alive
-    | Captured
 
 
 type Msg
