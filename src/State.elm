@@ -10,8 +10,9 @@ init : Model
 init =
     { board = startingBoard
     , boardWithoutPossibleMoves = startingBoard
-    , beingDragged = Nothing
     , turn = White
+    , beingDragged = Nothing
+    , previousMove = Nothing
     }
 
 
@@ -62,6 +63,7 @@ update msg model =
                         , board = updatedBoard
                         , boardWithoutPossibleMoves = updatedBoard
                         , turn = oppositeTeam piece.team
+                        , previousMove = Just ( piece, currentIndex, targetIndex )
                     }
 
 
