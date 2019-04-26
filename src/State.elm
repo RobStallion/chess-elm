@@ -22,7 +22,7 @@ update msg model =
         CheckPossibleMoves tileIndex ->
             let
                 possMoves =
-                    getPossibleMoves tileIndex model.boardWithoutPossibleMoves
+                    getPossibleMoves tileIndex model
             in
             { model | board = updatePossibleMoves possMoves model.boardWithoutPossibleMoves }
 
@@ -39,20 +39,6 @@ update msg model =
             model
 
         Drop targetIndex ->
-            let
-                boardWithoutPossibleMoves =
-                    model.boardWithoutPossibleMoves
-
-                updatedBoard =
-                    case model.beingDragged of
-                        Just ( piece, currentIndex ) ->
-                            boardWithoutPossibleMoves
-                                |> moveToNewTile targetIndex piece
-                                |> removeFromPreviousTile currentIndex piece
-
-                        Nothing ->
-                            model.board
-            in
             case model.beingDragged of
                 Nothing ->
                     model
@@ -60,11 +46,23 @@ update msg model =
                 Just ( piece, currentIndex ) ->
                     { model
                         | beingDragged = Nothing
-                        , board = updatedBoard
-                        , boardWithoutPossibleMoves = updatedBoard
+                        , board = updateBoard model targetIndex
+                        , boardWithoutPossibleMoves = updateBoard model targetIndex
                         , turn = oppositeTeam piece.team
                         , previousMove = Just ( piece, currentIndex, targetIndex )
                     }
+
+
+updateBoard : Model -> Int -> Board
+updateBoard model targetIndex =
+    case model.beingDragged of
+        Just ( piece, currentIndex ) ->
+            model.boardWithoutPossibleMoves
+                |> moveToNewTile targetIndex piece
+                |> removeFromPreviousTile currentIndex piece
+
+        Nothing ->
+            model.board
 
 
 oppositeTeam : Team -> Team

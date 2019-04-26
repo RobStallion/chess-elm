@@ -5,31 +5,88 @@ import Dict
 import Types exposing (..)
 
 
-getPossibleMoves : Int -> Board -> List Int
-getPossibleMoves tileIndex board =
-    board
+getPossibleMoves : Int -> Model -> List Int
+getPossibleMoves tileIndex model =
+    model
+        |> .boardWithoutPossibleMoves
         |> getTilePiece tileIndex
         |> Maybe.withDefault (Piece King White)
         |> (\piece ->
                 case piece.pieceType of
                     King ->
-                        kingMoves tileIndex piece board
+                        kingMoves tileIndex piece model.boardWithoutPossibleMoves
 
                     Queen ->
-                        queenMoves tileIndex piece board
+                        queenMoves tileIndex piece model.boardWithoutPossibleMoves
 
                     Rook ->
-                        rookMoves tileIndex piece board
+                        rookMoves tileIndex piece model.boardWithoutPossibleMoves
 
                     Bishop ->
-                        bishopMoves tileIndex piece board
+                        bishopMoves tileIndex piece model.boardWithoutPossibleMoves
 
                     Knight ->
-                        knightMoves tileIndex piece board
+                        knightMoves tileIndex piece model.boardWithoutPossibleMoves
 
                     Pawn ->
-                        pawnMoves tileIndex piece board
+                        let
+                            enPassentCap =
+                                canPawnCaptureEP tileIndex piece model
+                        in
+                        enPassentCap ++ pawnMoves tileIndex piece model.boardWithoutPossibleMoves
            )
+
+
+didPawnMoveTwoSpaces : Int -> Piece -> Model -> Bool
+didPawnMoveTwoSpaces currentIndex piece model =
+    case model.previousMove of
+        Just ( p, i1, i2 ) ->
+            i2 == currentIndex && i1 == currentIndex + 20
+
+        Nothing ->
+            False
+
+
+canPawnCaptureEP : Int -> Piece -> Model -> List Int
+canPawnCaptureEP tileIndex piece model =
+    case piece.team of
+        Black ->
+            []
+
+        White ->
+            if List.member tileIndex (List.range 52 59) then
+                let
+                    tile_int =
+                        [ 1, -1 ]
+                            |> List.map (\i -> ( tileIndex + i, getTilePiece (tileIndex + i) model.board ))
+                            |> List.foldl
+                                (\mp acc ->
+                                    case mp of
+                                        ( _, Nothing ) ->
+                                            acc
+
+                                        ( i, Just p ) ->
+                                            if p.pieceType == Pawn && True then
+                                                ( i, p ) :: acc
+
+                                            else
+                                                acc
+                                )
+                                []
+                            |> List.foldl
+                                (\( i, p ) acc ->
+                                    if didPawnMoveTwoSpaces i p model then
+                                        i + 10 :: acc
+
+                                    else
+                                        acc
+                                )
+                                []
+                in
+                tile_int
+
+            else
+                []
 
 
 kingMoves : Int -> Piece -> Board -> List Int
@@ -67,17 +124,21 @@ pawnMoves : Int -> Piece -> Board -> List Int
 pawnMoves tileIndex piece board =
     case piece.team of
         White ->
-            getPawnMoves Light 10 20 9 11 tileIndex piece board
+            getPawnMoves 10 20 9 11 tileIndex piece board
 
         Black ->
-            getPawnMoves Dark -10 -20 -9 -11 tileIndex piece board
+            getPawnMoves -10 -20 -9 -11 tileIndex piece board
 
 
-getPawnMoves : Colour -> Int -> Int -> Int -> Int -> Int -> Piece -> Board -> List Int
-getPawnMoves colour oneSq twoSq capL capR tileIndex clickedPiece board =
+getPawnMoves : Int -> Int -> Int -> Int -> Int -> Piece -> Board -> List Int
+getPawnMoves oneSq twoSq capL capR tileIndex clickedPiece board =
     let
         possMoves =
-            if allowTwoSpaceMove tileIndex clickedPiece && isTileFree (tileIndex + oneSq) board && isTileFree (tileIndex + twoSq) board then
+            if
+                isPawnOnStartingTile tileIndex clickedPiece
+                    && isTileFree (tileIndex + oneSq) board
+                    && isTileFree (tileIndex + twoSq) board
+            then
                 [ tileIndex + oneSq, tileIndex + twoSq ]
 
             else if isTileFree (tileIndex + oneSq) board then
@@ -91,8 +152,8 @@ getPawnMoves colour oneSq twoSq capL capR tileIndex clickedPiece board =
         |> checkTile tileIndex clickedPiece board capR
 
 
-allowTwoSpaceMove : Int -> Piece -> Bool
-allowTwoSpaceMove tileIndex piece =
+isPawnOnStartingTile : Int -> Piece -> Bool
+isPawnOnStartingTile tileIndex piece =
     List.member tileIndex (pawnHomeIndexes piece)
 
 
@@ -106,9 +167,19 @@ pawnHomeIndexes piece =
             List.range 71 79
 
 
+pawnPossCapEPIndexes : Piece -> List Int
+pawnPossCapEPIndexes piece =
+    case piece.team of
+        Black ->
+            List.range 42 49
+
+        White ->
+            List.range 52 59
+
+
 checkTile : Int -> Piece -> Board -> Int -> List Int -> List Int
-checkTile tileIndex clickedPiece board count intList =
-    case getTilePiece (tileIndex + count) board of
+checkTile tileIndex clickedPiece board move intList =
+    case getTilePiece (tileIndex + move) board of
         Nothing ->
             intList
 
@@ -117,7 +188,7 @@ checkTile tileIndex clickedPiece board count intList =
                 intList
 
             else
-                (tileIndex + count) :: intList
+                (tileIndex + move) :: intList
 
 
 addMovesToList : Int -> Piece -> Board -> Int -> List Int -> List Int
